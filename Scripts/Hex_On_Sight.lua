@@ -1,4 +1,4 @@
---[[ Hex On Sight version 0.2 by UWM8 ]]--
+--[[ Hex On Sight version 0.3 by UWM8 with contributions by Moones and DL ]]--
 
 require("libs.Utils")
 require("libs.ScriptConfig")
