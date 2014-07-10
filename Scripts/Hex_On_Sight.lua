@@ -34,7 +34,7 @@ function Tick(tick)
 	local me = entityList:GetMyHero()
 	if not me then return end
 	local ID = me.classId
-	if	ID == CDOTA_Unit_Hero_Lion then
+	if ID == CDOTA_Unit_Hero_Lion then
 		Disable(me,2,true)
 	elseif ID == CDOTA_Unit_Hero_ShadowShaman then		
 		Disable(me,2,true)
@@ -50,7 +50,7 @@ function Disable(me,disable,nativeHex)
 		local enemies = entityList:GetEntities({type=LuaEntity.TYPE_HERO,team = 5-me.team})
 		for i,v in ipairs(enemies) do
 			local blink = v:FindItem("item_blink")
-			local Hexed =  v:IsHexed(v)
+			local Hexed = v:IsHexed(v)
 			local Stunned = v:IsStunned(v)
 			if v.alive then
 				if sheepstick and GetDistance2D(v,me) < 801 and v.alive then
