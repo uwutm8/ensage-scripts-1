@@ -50,27 +50,23 @@ function Disable(me,disable,nativeHex)
 		local enemies = entityList:GetEntities({type=LuaEntity.TYPE_HERO,team = 5-me.team})
 		for i,v in ipairs(enemies) do
 			local blink = v:FindItem("item_blink")
-			local Hexed = v:IsHexed(v)
-			local Stunned = v:IsStunned(v)
+			local Hexed = v:IsHexed()
+			local Stunned = v:IsStunned()
 			if v.alive then
 				if sheepstick and GetDistance2D(v,me) < 801 and v.alive then
 					if activerino and not Hexed and not Stunned then
 						me:SafeCastItem("item_sheepstick",v)
-						Sleep(100)
 					end
 					if blink and blink.cd > 11 and not Hexed and not Stunned then
 						me:SafeCastItem("item_sheepstick",v)
-						Sleep(100)
 					end
 				end
 				if nativeHex and GetDistance2D(v,me) < SpellDisable.castRange + 1 and v.alive then
 					if activerino and not Hexed and not Stunned then
 						me:SafeCastAbility(SpellDisable,v)
-						Sleep(100)
 					end
 					if blink and blink.cd > 11 and not Hexed and not Stunned then
 						me:SafeCastAbility(SpellDisable,v)
-						Sleep(100)
 					end
 				end
 			end
