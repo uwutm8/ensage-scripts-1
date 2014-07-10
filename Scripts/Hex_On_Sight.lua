@@ -49,33 +49,29 @@ function Disable(me,disable,nativeHex)
 	if me.alive and not me:IsChanneling() then
 		local SpellDisable = me:GetAbility(disable)
 		local sheepstick = me:FindItem("item_sheepstick")
-		local enemies = entityList:GetEntities({type=LuaEntity.TYPE_HERO,team = 5-me.team})
+		local enemies = entityList:GetEntities({type=LuaEntity.TYPE_HERO,team = 5-me.team,alive=true,visible=true,illusion=false})
 		for i,v in ipairs(enemies) do
 			local blink = v:FindItem("item_blink")
 			local Hexed = v:IsHexed()
-			local Stunned = v:IsStunned()
-			if v.alive then
-				if sheepstick and GetDistance2D(v,me) < 801 and v.alive then
-					if activerino and not Hexed and not Stunned then
-						me:SafeCastItem("item_sheepstick",v)
-					end
-					if blink and blink.cd > 11 and not Hexed and not Stunned then
-						me:SafeCastItem("item_sheepstick",v)
-					end
+			local Stunned = v:IsStunned()			
+			if sheepstick and sheepstick:CanBeCasted() and GetDistance2D(v,me) < 825 then
+				if activerino and not Hexed and not Stunned then
+					me:SafeCastItem("item_sheepstick",v)
 				end
-				if nativeHex and GetDistance2D(v,me) < SpellDisable.castRange + 1 and v.alive then
-					if activerino and not Hexed and not Stunned then
-						me:SafeCastAbility(SpellDisable,v)
-					end
-					if blink and blink.cd > 11 and not Hexed and not Stunned then
-						me:SafeCastAbility(SpellDisable,v)
-					end
+				if blink and blink.cd > 11 and not Hexed and not Stunned then
+					me:SafeCastItem("item_sheepstick",v)
+				end
+			elseif nativeHex and GetDistance2D(v,me) < SpellDisable.castRange + 25 then
+				if activerino and not Hexed and not Stunned then
+					me:SafeCastAbility(SpellDisable,v)
+				end
+				if blink and blink.cd > 11 and not Hexed and not Stunned then
+					me:SafeCastAbility(SpellDisable,v)
 				end
 			end
 		end
 	end
 end
-
 
 function Load()
 	if PlayingGame() then
