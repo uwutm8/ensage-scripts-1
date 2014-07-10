@@ -20,7 +20,6 @@ function Key(msg,code)
 	if IsKeyDown(toggleKey) then
 		activerino = not activerino
 	end
-
 	if not activerino then
 		statusText2.visible = false
 		statusText.visible = true
@@ -28,7 +27,6 @@ function Key(msg,code)
 		statusText.visible = false
 		statusText2.visible = true
 	end
-
 end
 
 function Tick(tick)
@@ -36,7 +34,6 @@ function Tick(tick)
 	local me = entityList:GetMyHero()
 	if not me then return end
 	local ID = me.classId
-
 	if	ID == CDOTA_Unit_Hero_Lion then
 		Disable(me,2,true)
 	elseif ID == CDOTA_Unit_Hero_ShadowShaman then		
@@ -48,22 +45,14 @@ end
 
 function Disable(me,disable,nativeHex)
 	if me.alive and not me:IsChanneling() then
-
-
 		local SpellDisable = me:GetAbility(disable)
-
 		local sheepstick = me:FindItem("item_sheepstick")
-
-
 		local enemies = entityList:GetEntities({type=LuaEntity.TYPE_HERO,team = 5-me.team})
-
 		for i,v in ipairs(enemies) do
-
 			local blink = v:FindItem("item_blink")
 			local Hexed =  v:IsHexed(v)
 			local Stunned = v:IsStunned(v)
 			if v.alive then
-
 				if sheepstick and GetDistance2D(v,me) < 801 and v.alive then
 					if activerino and not Hexed and not Stunned then
 						me:SafeCastItem("item_sheepstick",v)
@@ -72,10 +61,8 @@ function Disable(me,disable,nativeHex)
 					if blink and blink.cd > 11 and not Hexed and not Stunned then
 						me:SafeCastItem("item_sheepstick",v)
 						Sleep(100)
-
 					end
 				end
-
 				if nativeHex and GetDistance2D(v,me) < SpellDisable.castRange + 1 and v.alive then
 					if activerino and not Hexed and not Stunned then
 						me:SafeCastAbility(SpellDisable,v)
