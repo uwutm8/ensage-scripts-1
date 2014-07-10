@@ -1,4 +1,4 @@
---[[ Hex On Sight version 0.3 by UWM8 with contributions by Moones and DL ]]--
+--[[ Hex On Sight version 0.4 by UWM8 with contributions by Moones and DL ]]--
 
 require("libs.Utils")
 require("libs.ScriptConfig")
@@ -32,7 +32,7 @@ function Key(msg,code)
 end
 
 function Tick(tick)
-	if not SleepCheck() then return end	Sleep(200)
+	if not SleepCheck() then return end	Sleep(5)
 	local me = entityList:GetMyHero()
 	if not me then return end
 	local ID = me.classId
@@ -54,19 +54,23 @@ function Disable(me,disable,nativeHex)
 			local blink = v:FindItem("item_blink")
 			local Hexed = v:IsHexed()
 			local Stunned = v:IsStunned()			
-			if sheepstick and sheepstick:CanBeCasted() and GetDistance2D(v,me) < 825 then
+			if sheepstick and sheepstick:CanBeCasted() and GetDistance2D(v,me) < 801 then
 				if activerino and not Hexed and not Stunned then
 					me:SafeCastItem("item_sheepstick",v)
+					break
 				end
 				if blink and blink.cd > 11 and not Hexed and not Stunned then
 					me:SafeCastItem("item_sheepstick",v)
+					break
 				end
-			elseif nativeHex and GetDistance2D(v,me) < SpellDisable.castRange + 25 then
+			elseif nativeHex and GetDistance2D(v,me) < SpellDisable.castRange then
 				if activerino and not Hexed and not Stunned then
 					me:SafeCastAbility(SpellDisable,v)
+					break
 				end
 				if blink and blink.cd > 11 and not Hexed and not Stunned then
 					me:SafeCastAbility(SpellDisable,v)
+					break
 				end
 			end
 		end
