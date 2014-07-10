@@ -61,7 +61,7 @@ function Disable(me,disable,nativeHex)
 					me:SafeCastItem("item_sheepstick",v)
 					break
 				end
-			elseif nativeHex and GetDistance2D(v,me) < SpellDisable.castRange < 25 then
+			elseif nativeHex and GetDistance2D(v,me) < SpellDisable.castRange + 25 then
 				if activerino and not Hexed and not Stunned then
 					me:SafeCastAbility(SpellDisable,v)
 					break
