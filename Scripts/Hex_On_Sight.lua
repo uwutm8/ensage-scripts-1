@@ -3,9 +3,11 @@ require("libs.ScriptConfig")
 
 config = ScriptConfig.new()
 config:SetParameter("Active", "F", config.TYPE_HOTKEY)
+config:SetParameter("UseOrchid", true)
 config:Load()
 
 local toggleKey   = config.Active
+local UseOrchid   = config.UseOrchid
 local reg         = false
 local activerino  = false
 local monitor     = client.screenSize.x/1600
@@ -63,7 +65,7 @@ function Disable(me,disable,nativeSpell)
 					break
 				end
 
-			elseif GetDistance2D(v,me) < 925 and orchid and orchid:CanBeCasted() then
+			elseif GetDistance2D(v,me) < 925 and UseOrchid and orchid and orchid:CanBeCasted() then
 				if activerino and not (MI or SI) then
 					me:SafeCastItem("item_orchid",v)
 					break
