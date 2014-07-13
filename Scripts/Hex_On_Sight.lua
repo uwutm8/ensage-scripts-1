@@ -1,6 +1,6 @@
 require("libs.Utils")
 require("libs.ScriptConfig")
-
+require("libs.Hex_On_Sight")
 config = ScriptConfig.new()
 config:SetParameter("Active", "F", config.TYPE_HOTKEY)
 config:SetParameter("UseOrchid", true)
@@ -9,7 +9,7 @@ config:Load()
 local toggleKey   = config.Active
 local UseOrchid   = config.UseOrchid
 local reg         = false
-local activerino  = false
+local activ		  = false
 local monitor     = client.screenSize.x/1600
 local F15         = drawMgr:CreateFont("F15","Tahoma",15*monitor,550*monitor)
 local F14         = drawMgr:CreateFont("F14","Tahoma",14*monitor,550*monitor) 
@@ -20,9 +20,9 @@ local statusText2 = drawMgr:CreateText(10*monitor,560*monitor,-1,"Disable On Sig
 function Key(msg,code)
 	if client.chat then return end
 	if IsKeyDown(toggleKey) then
-		activerino = not activerino
+		activ = not activ
 	end
-	if not activerino then
+	if not activ then
 		statusText2.visible = false
 		statusText.visible  = true
 	else
@@ -47,7 +47,7 @@ end
 
 function Disable(me,disable,nativeSpell)
 	if me.alive and not me:IsChanneling() then
-		local sheepstick = me:FindItem("item_sheepstick")
+		local sheep      = me:FindItem("item_sheepstick")
 		local orchid     = me:FindItem("item_orchid")
 		local enemies    = entityList:GetEntities({type=LuaEntity.TYPE_HERO,team = 5-me.team,alive=true,visible=true,illusion=false})
 		for i,v in ipairs(enemies) do
@@ -55,37 +55,61 @@ function Disable(me,disable,nativeSpell)
 			local SI	= v:IsSilenced()
 			local MI 	= v:IsMagicImmune()
 
-			if GetDistance2D(v,me) < 825 and sheepstick and sheepstick:CanBeCasted() then
-				if activerino and not (MI or SI) then
-					me:SafeCastItem("item_sheepstick",v)
-					break
-				end
-				if blink and blink.cd > 11 and not (MI or SI) then
-					me:SafeCastItem("item_sheepstick",v)
-					break
-				end
 
+			if GetDistance2D(v,me) < 825 and sheep and sheep:CanBeCasted() then
+				if activ and not (MI or SI) then
+					me:SafeCastItem("item_sheepstick",v)
+					break
+				end
+				if blink and blink.cd > 11 and not (MI or SI) then
+					me:SafeCastItem("item_sheepstick",v)
+					break
+				end
+				if Initiation[v.name] then
+					local iSpell =  v:FindSpell(Initiation[v.name].Spell)
+					local iLevel = iSpell.level 
+					if iSpell.cd > iSpell:GetCooldown(iLevel) - 1 then
+						me:SafeCastItem("item_sheepstick",v)
+						break
+					end
+				end
 			elseif GetDistance2D(v,me) < 925 and UseOrchid and orchid and orchid:CanBeCasted() then
-				if activerino and not (MI or SI) then
+				if activ and not (MI or SI) then
 					me:SafeCastItem("item_orchid",v)
 					break
 				end
 				if blink and blink.cd > 11 and not (MI or SI) then
 					me:SafeCastItem("item_orchid",v)
 					break
+				end
+				if Initiation[v.name] then
+					local iSpell =  v:FindSpell(Initiation[v.name].Spell)
+					local iLevel = iSpell.level 
+					if iSpell.cd > iSpell:GetCooldown(iLevel) - 1 then
+						me:SafeCastItem("item_orchid",v)
+						break
+					end
 				end
 			elseif disable ~= nil then
-				local SpellDisable = me:GetAbility(disable)
+				local disable1 = me:GetAbility(disable)
 				local SpellFind    = me:FindAbility(nativeSpell)
 
-				if SpellFind:CanBeCasted() and GetDistance2D(v,me) < SpellDisable.castRange + 25 then
-					if activerino and not (MI or SI) then
-						me:SafeCastAbility(SpellDisable,v)
+				if SpellFind:CanBeCasted() and GetDistance2D(v,me) < disable1.castRange + 25 then
+					if activ and not (MI or SI) then
+						me:SafeCastAbility(disable1,v)
 						break
 					end
 					if blink and blink.cd > 11 and not (MI or SI) then
-						me:SafeCastAbility(SpellDisable,v)
+						me:SafeCastAbility(disable1,v)
 						break
+					end
+					if Initiation[v.name] then
+						local iSpell =  v:FindSpell(Initiation[v.name].Spell)
+						local iLevel = iSpell.level 
+						if iSpell.cd > iSpell:GetCooldown(iLevel) - 1 then
+							me:SafeCastAbility(disable1,v)
+							break
+						end
 					end
 				end
 			end
