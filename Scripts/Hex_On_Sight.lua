@@ -2,7 +2,7 @@ require("libs.Utils")
 require("libs.ScriptConfig")
 require("libs.Hex_On_Sight")
 config = ScriptConfig.new()
-config:SetParameter("Active", "F", config.TYPE_HOTKEY)
+config:SetParameter("Active", "U", config.TYPE_HOTKEY)
 config:SetParameter("UseOrchid", true)
 config:Load()
 
@@ -56,7 +56,7 @@ function Disable(me,disable,nativeSpell)
 			local MI 	= v:IsMagicImmune()
 
 
-			if GetDistance2D(v,me) < 825 and sheep and sheep:CanBeCasted() then
+			if GetDistance2D(v,me) < 800 and sheep and sheep:CanBeCasted() then
 				if activ and not (MI or SI) then
 					me:SafeCastItem("item_sheepstick",v)
 					break
@@ -73,7 +73,7 @@ function Disable(me,disable,nativeSpell)
 						break
 					end
 				end
-			elseif GetDistance2D(v,me) < 925 and UseOrchid and orchid and orchid:CanBeCasted() then
+			elseif GetDistance2D(v,me) < 900 and UseOrchid and orchid and orchid:CanBeCasted() then
 				if activ and not (MI or SI) then
 					me:SafeCastItem("item_orchid",v)
 					break
@@ -94,7 +94,7 @@ function Disable(me,disable,nativeSpell)
 				local disable1 = me:GetAbility(disable)
 				local SpellFind    = me:FindAbility(nativeSpell)
 
-				if SpellFind:CanBeCasted() and GetDistance2D(v,me) < disable1.castRange + 25 then
+				if SpellFind:CanBeCasted() and GetDistance2D(v,me) < disable1.castRange then
 					if activ and not (MI or SI) then
 						me:SafeCastAbility(disable1,v)
 						break
