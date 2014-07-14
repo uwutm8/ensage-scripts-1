@@ -17,7 +17,7 @@ local statusText  = drawMgr:CreateText(10*monitor,560*monitor,-1,"(" .. string.c
 local statusText2 = drawMgr:CreateText(10*monitor,560*monitor,-1,"(" .. string.char(toggleKey) .. ") Disable On Sight: Any Enemy",F14)
 
 function Key(msg,code)
-	if client.chat then return end
+	if client.chat or client.console then return end
 	if IsKeyDown(toggleKey) then
 		activ = not activ
 	end
