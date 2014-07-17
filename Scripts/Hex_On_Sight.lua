@@ -58,10 +58,12 @@ function Disable(me,disable,nativeSpell)
 			if GetDistance2D(v,me) < 800 and sheep and sheep:CanBeCasted() then
 				if activ and not (MI or SI) then
 					me:SafeCastItem("item_sheepstick",v)
+					Sleep(200)
 					break
 				end
 				if blink and blink.cd > 11 and not (MI or SI) then
 					me:SafeCastItem("item_sheepstick",v)
+					Sleep(200)
 					break
 				end
 				if Initiation[v.name] then
@@ -69,16 +71,19 @@ function Disable(me,disable,nativeSpell)
 					local iLevel = iSpell.level 
 					if iSpell.cd > iSpell:GetCooldown(iLevel) - 1 then
 						me:SafeCastItem("item_sheepstick",v)
+						Sleep(200)
 						break
 					end
 				end
 			elseif GetDistance2D(v,me) < 900 and UseOrchid and orchid and orchid:CanBeCasted() then
 				if activ and not (MI or SI) then
 					me:SafeCastItem("item_orchid",v)
+					Sleep(200)
 					break
 				end
 				if blink and blink.cd > 11 and not (MI or SI) then
 					me:SafeCastItem("item_orchid",v)
+					Sleep(200)
 					break
 				end
 				if Initiation[v.name] then
@@ -86,6 +91,7 @@ function Disable(me,disable,nativeSpell)
 					local iLevel = iSpell.level 
 					if iSpell.cd > iSpell:GetCooldown(iLevel) - 1 then
 						me:SafeCastItem("item_orchid",v)
+						Sleep(200)
 						break
 					end
 				end
@@ -96,10 +102,12 @@ function Disable(me,disable,nativeSpell)
 				if SpellFind:CanBeCasted() and GetDistance2D(v,me) < disable1.castRange then
 					if activ and not (MI or SI) then
 						me:SafeCastAbility(disable1,v)
+						Sleep(200)
 						break
 					end
 					if blink and blink.cd > 11 and not (MI or SI) then
 						me:SafeCastAbility(disable1,v)
+						Sleep(200)
 						break
 					end
 					if Initiation[v.name] then
@@ -107,6 +115,7 @@ function Disable(me,disable,nativeSpell)
 						local iLevel = iSpell.level 
 						if iSpell.cd > iSpell:GetCooldown(iLevel) - 1 then
 							me:SafeCastAbility(disable1,v)
+							Sleep(200)
 							break
 						end
 					end
