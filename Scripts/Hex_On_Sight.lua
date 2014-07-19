@@ -44,12 +44,12 @@ end
 
 function Disable(me,disable,nativeSpell)
 	if me.alive and not me:IsChanneling() then
-		local sheep      = me:FindItem("item_sheepstick")
-		local enemies    = entityList:GetEntities({type=LuaEntity.TYPE_HERO,team = 5-me.team,alive=true,visible=true,illusion=false})
+		local sheep     = me:FindItem("item_sheepstick")
+		local enemies   = entityList:GetEntities({type=LuaEntity.TYPE_HERO,team = 5-me.team,alive=true,visible=true,illusion=false})
 		for i,v in ipairs(enemies) do
 			local blink = v:FindItem("item_blink")
-			local SI	= v:IsSilenced()
-			local MI 	= v:IsMagicImmune()
+			local SI    = v:IsSilenced()
+			local MI    = v:IsMagicImmune()
 
 			if GetDistance2D(v,me) < 800 and sheep and sheep:CanBeCasted() then
 				if activ and not (MI or SI) then
