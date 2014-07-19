@@ -8,7 +8,7 @@ config:Load()
 local toggleKey   = config.ToggleKey
 local disableKey  = config.UseDisableKey
 local reg         = false
-local activ		  = true
+local activ       = true
 local disabl      = false
 local monitor     = client.screenSize.x/1600
 local F15         = drawMgr:CreateFont("F15","Tahoma",15*monitor,550*monitor)
@@ -75,7 +75,6 @@ function Tick(tick)
 			end
 			if GetDistance2D(v,me) <= kfield.castRange and kfield and kfield:CanBeCasted() and activ and not (me.abilityPhase or disabl) then
 				if stunned and stunned.remainingTime <= 1 then
-					me:SafeCastAbility(static,v.position)
 					me:SafeCastAbility(kfield,v.position)
 					Sleep(500)
 					break
