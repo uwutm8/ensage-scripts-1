@@ -25,7 +25,7 @@ function Key(msg,code)
 end
 
 function Tick(tick)
-	if not SleepCheck() then return end	Sleep(50)
+	if not SleepCheck() then return end	Sleep(200)
 	local me = entityList:GetMyHero()
 	if not me then return end
 
