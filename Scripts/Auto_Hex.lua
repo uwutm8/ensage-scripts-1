@@ -119,22 +119,10 @@ end
 
 function Load()
 	if PlayingGame() then
-		statusText.visible = false
-		local me = entityList:GetMyHero()
-		reg = true
-		script:RegisterEvent(EVENT_TICK,Tick)
-		script:RegisterEvent(EVENT_KEY,Key)
-		script:UnregisterEvent(Load)
-	end
-end
-
-
-function Load()
-	if PlayingGame() then
-		statusText.visible = false
-		statusText2.visible = false
 		local me = entityList:GetMyHero()
 		if not me then 
+			statusText.visible = false
+			statusText2.visible = false
 			script:Disable()
 		else
 			reg = true
@@ -143,6 +131,16 @@ function Load()
 			script:UnregisterEvent(Load)
 		end
 	end
+end
+
+function GameClose()
+	if reg then
+		script:UnregisterEvent(Tick)
+		script:UnregisterEvent(Key)
+		script:RegisterEvent(EVENT_TICK,Load)
+		reg = false
+	end
+	collectgarbage("collect")
 end
 
 script:RegisterEvent(EVENT_CLOSE,GameClose)
