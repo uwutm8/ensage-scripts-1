@@ -25,7 +25,7 @@ function Key(msg,code)
 end
 
 function Tick(tick)
-	if not SleepCheck() then return end	Sleep(200)
+	if not SleepCheck() then return end	Sleep(125)
 	local me = entityList:GetMyHero()
 	if not me then return end
 
@@ -44,7 +44,6 @@ function Tick(tick)
 		statusText.visible  = false
 		statusText2.visible = true
 	end
-	
 
 	local ID = me.classId
 	if ID == CDOTA_Unit_Hero_Lion then
