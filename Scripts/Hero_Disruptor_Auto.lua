@@ -18,14 +18,13 @@ local statusText2 = drawMgr:CreateText(10*monitor,530*monitor,-1,"(" .. string.c
 
 function Key(msg,code)
 	if client.chat or client.console then return end
-
 	if IsKeyDown(toggleKey) then
 		activ = not activ
 	end
 end
 
 function Tick(tick)
-	if not SleepCheck() then return end	Sleep(50)
+	if not SleepCheck() then return end	Sleep(125)
 	local me = entityList:GetMyHero()
 	if not me then return end
 
