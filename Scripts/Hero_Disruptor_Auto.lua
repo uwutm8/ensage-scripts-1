@@ -13,8 +13,8 @@ local disabl      = false
 local monitor     = client.screenSize.x/1600
 local F15         = drawMgr:CreateFont("F15","Tahoma",15*monitor,550*monitor)
 local F14         = drawMgr:CreateFont("F14","Tahoma",14*monitor,550*monitor) 
-local statusText  = drawMgr:CreateText(10*monitor,560*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Disruptor: Off",F14)
-local statusText2 = drawMgr:CreateText(10*monitor,560*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Disruptor: On",F14)
+local statusText  = drawMgr:CreateText(10*monitor,530*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Disruptor: Off",F14)
+local statusText2 = drawMgr:CreateText(10*monitor,530*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Disruptor: On",F14)
 
 function Key(msg,code)
 	if client.chat or client.console then return end
@@ -55,7 +55,7 @@ function Tick(tick)
 			local tp      = v:FindItem("item_tpscroll")
 			local stunned = v:FindModifier("modifier_stunned")
 
-			if GetDistance2D(v,me) <= glimpse.castRange and glimpse and glimpse:CanBeCasted() and activ and not (me.abilityPhase or disabl) then
+			if GetDistance2D(v,me) <= glimpse.castRange and glimpse and glimpse:CanBeCasted() and activ and not me.abilityPhase then
 				if (tp and tp.cd > 56) or v:DoesHaveModifier("modifier_fountain_aura_buff") == true or v:DoesHaveModifier("modifier_teleporting") == true then
 					me:SafeCastAbility(glimpse,v)
 					Sleep(500)
@@ -63,8 +63,8 @@ function Tick(tick)
 				end
 			end
 
-			if GetDistance2D(v,me) <= kfield.castRange and kfield and kfield:CanBeCasted() and activ and not (me.abilityPhase or disabl) then
-				if GetDistance2D(v,me) <= static.castRange and static and static:CanBeCasted() and activ and not (me.abilityPhase or disabl) then
+			if GetDistance2D(v,me) <= kfield.castRange and kfield and kfield:CanBeCasted() and activ and not me.abilityPhase then
+				if GetDistance2D(v,me) <= static.castRange and static and static:CanBeCasted() and activ and not me.abilityPhase then
 					if stunned and stunned.remainingTime >= 1 then
 						me:SafeCastAbility(static,v.position)
 						me:SafeCastAbility(kfield,v.position)
@@ -73,7 +73,7 @@ function Tick(tick)
 					end
 				end
 			end
-			if GetDistance2D(v,me) <= kfield.castRange and kfield and kfield:CanBeCasted() and activ and not (me.abilityPhase or disabl) then
+			if GetDistance2D(v,me) <= kfield.castRange and kfield and kfield:CanBeCasted() and activ and not me.abilityPhase then
 				if stunned and stunned.remainingTime <= 1 then
 					me:SafeCastAbility(kfield,v.position)
 					Sleep(500)
@@ -88,10 +88,10 @@ function Load()
 	if PlayingGame() then
 		local me = entityList:GetMyHero()
 		if me.classId ~= CDOTA_Unit_Hero_Disruptor then 
+			statusText.visible  = false
+			statusText2.visible = false
 			script:Disable() 
 		else
-			statusText.visible = true
-			local me = entityList:GetMyHero()
 			reg = true
 			script:RegisterEvent(EVENT_TICK,Tick)
 			script:RegisterEvent(EVENT_KEY,Key)
@@ -101,8 +101,6 @@ function Load()
 end
 
 function GameClose()
-	statusText.visible  = false
-	statusText2.visible = false
 	if reg then
 		script:UnregisterEvent(Tick)
 		script:UnregisterEvent(Key)
