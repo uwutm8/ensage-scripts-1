@@ -1,6 +1,6 @@
 require("libs.Utils")
 require("libs.ScriptConfig")
-require("libs.Hex_On_Sight")
+require("libs.Stuff")
 config = ScriptConfig.new()
 config:SetParameter("Active", "U", config.TYPE_HOTKEY)
 config:SetParameter("UseDisableKey", true)
