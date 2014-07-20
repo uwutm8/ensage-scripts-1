@@ -46,7 +46,7 @@ end
 
 function Tick(tick)
 	if not SleepCheck() then return end
-	sleep(125)
+	Sleep(125)
 	if not activ then return end
 	-- get our hero
 	local me = entityList:GetMyHero()
