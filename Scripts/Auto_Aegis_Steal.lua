@@ -1,4 +1,4 @@
--[[potential steal spell special instructions for death of rosh:
+--[[potential steal spell special instructions for death of rosh:
    blink carriers, Anti-Mage(blink), clocwerk(auto ult), earth spirit(?), ember spirit(use slight of fist)
    void(blink),magnus(cut trees, stand next to pit,skewer), mirana(leap, invis),morphling(waveform),puck(illusory orb,blink,steal,jaunt)
    qop(blink),sand king(blink,burrow out),slark(pounce),phoenix(icarus dive),spectre(Haunt->reality illusion closest to aegis->steal->spectral dagger out)
