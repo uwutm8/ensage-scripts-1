@@ -73,6 +73,7 @@ function Disable(me,disable,nativeSpell)
 		local SI    = v:IsSilenced()
 		local MI    = v:IsMagicImmune()
 
+		if not SI or MI then
 			if GetDistance2D(v,me) < 800 and sheep and sheep:CanBeCasted() then
 				if activ then
 					me:SafeCastItem("item_sheepstick",v)
@@ -119,7 +120,7 @@ function Disable(me,disable,nativeSpell)
 							break
 						end
 					end
-				
+				end
 			end
 		end
 	end
