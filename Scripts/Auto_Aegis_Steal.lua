@@ -46,7 +46,7 @@ function Tick(tick)
 		-- search for aegis
 		for i,v in ipairs(items) do
 			local IH = v.itemHolds
-			if IH.name == "item_aegis" and GetDistance2D(v,me) < 2000 then
+			if IH.name == "item_aegis" and GetDistance2D(v,me) <= 150 then
 				entityList:GetMyPlayer():TakeItem(v)
 				Sleep(500)
 				break
