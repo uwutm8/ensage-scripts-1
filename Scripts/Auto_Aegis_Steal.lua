@@ -41,7 +41,8 @@ function Tick(tick)
 
 		for i,v in ipairs(items) do
 			local IH = v.itemHolds
-			if IH.name == "item_aegis" and GetDistance2D(v,me) < 2000 and activ then
+			print(IH.vector)
+			if IH.name == "item_aegis" and GetDistance2D(v,me) < 300 and activ then
 				entityList:GetMyPlayer():TakeItem(v)
 				Sleep(500)
 				break
