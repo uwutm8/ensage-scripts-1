@@ -28,13 +28,6 @@ function Tick(tick)
 	local me = entityList:GetMyHero()
 	if not me then return end
 
-	if not activ then
-		statusText2.visible = false
-		statusText.visible  = true
-	else
-		statusText.visible  = false
-		statusText2.visible = true
-	end
 
 	if me.alive and not me:IsChanneling() then
 		local items = entityList:GetEntities({type=LuaEntity.TYPE_ITEM_PHYSICAL})
