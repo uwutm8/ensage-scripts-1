@@ -3,13 +3,10 @@ require("libs.ScriptConfig")
 require("libs.Stuff")
 config = ScriptConfig.new()
 config:SetParameter("Active", "U", config.TYPE_HOTKEY)
-config:SetParameter("UseDisableKey", true)
 config:Load()
 
 local toggleKey   = config.Active
-local disableKey  = config.UseDisableKey
 local reg         = false
-local disabl      = false
 local activ       = false
 local monitor     = client.screenSize.x/1600
 local F15         = drawMgr:CreateFont("F15","Tahoma",15*monitor,550*monitor)
@@ -25,6 +22,7 @@ end
 
 function Key(msg,code)
 	if client.chat or client.console or client.loading then return end
+
 	if IsKeyDown(toggleKey) then
 		activ = not activ
 		if activ then
@@ -40,17 +38,6 @@ function Tick(tick)
 	local me = entityList:GetMyHero()
 	if not me then return end
 
-	local DisableKey = 0x20
-
-	if IsKeyDown(DisableKey) and disableKey then
-		disabl = true
-	else
-		disabl = false
-	end
-
-	if disabl then
-		statusText.text = "(" .. hotkeyText .. ") Auto Hex: Off"
-	end
 
 	if me.alive and not me:IsChanneling() then
 
