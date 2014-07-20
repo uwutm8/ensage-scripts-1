@@ -1,3 +1,7 @@
+-[[potential spell special instructions for death of rosh:
+   blink carriers, Anti-Mage(blink), clocwerk(auto ult), earth spirit(?), ember spirit(use slight of fist)
+   void(blink),lycan(auto deny by invis wolves)]]
+
 require("libs.Utils")
 require("libs.ScriptConfig")
 
@@ -51,6 +55,10 @@ function Tick(tick)
 				Sleep(500)
 				break
 			end
+--			if IH.name == "item_aegis" and GetDistance2D(v,allies) => 1000 then
+--				use lycan wolves to deny
+--				entityList:GetMyPlayer():Attack(v) deny
+--			end
 		end
 	end
 end
