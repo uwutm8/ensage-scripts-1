@@ -38,13 +38,12 @@ function Tick(tick)
 	local me = entityList:GetMyHero()
 	if not me then return end
 
-
 	if me.alive and not me:IsChanneling() then
 
 		local ID = me.classId
 		if ID == CDOTA_Unit_Hero_Lion then
 			Disable(me,2,"lion_voodoo")
-		elseif ID == CDOTA_Unit_Hero_ShadowShaman then		
+		elseif ID == CDOTA_Unit_Hero_ShadowShaman then
 			Disable(me,2,"shadow_shaman_voodoo")
 		else
 			Disable(me,nil,nil)
@@ -75,7 +74,7 @@ function Disable(me,disable,nativeSpell)
 				if Initiation[v.name] then
 					local iSpell =  v:FindSpell(Initiation[v.name].Spell)
 					local iLevel = iSpell.level 
-					if iSpell and iSpell.cd > iSpell:GetCooldown(iLevel) - 1 then
+					if iSpell.level > 0 and iSpell.cd > iSpell:GetCooldown(iLevel) - 1 then
 						me:SafeCastItem("item_sheepstick",v)
 						Sleep(500)
 						break
@@ -101,8 +100,9 @@ function Disable(me,disable,nativeSpell)
 					if Initiation[v.name] then
 						local iSpell = v:FindSpell(Initiation[v.name].Spell)
 						local iLevel = iSpell.level 
-						if iSpell and iSpell.cd > iSpell:GetCooldown(iLevel) - 1 then
+						if iSpell.level > 0 and iSpell.cd > iSpell:GetCooldown(iLevel) - 1 then
 							me:SafeCastAbility(disable1,v)
+							print(iSpell.cd)
 							Sleep(500)
 							break
 						end
