@@ -1,6 +1,14 @@
--[[potential spell special instructions for death of rosh:
+-[[potential steal spell special instructions for death of rosh:
    blink carriers, Anti-Mage(blink), clocwerk(auto ult), earth spirit(?), ember spirit(use slight of fist)
-   void(blink),lycan(auto deny by invis wolves)]]
+   void(blink),magnus(cut trees, stand next to pit,skewer), mirana(leap, invis),morphling(waveform),puck(illusory orb,blink,steal,jaunt)
+   qop(blink),sand king(blink,burrow out),slark(pounce),phoenix(icarus dive),spectre(Haunt->reality illusion closest to aegis->steal->spectral dagger out)
+   storm spirit(ball lightning in, steal, ball lightning out),timbersaw(cut trees on cliff, timberchain to other side and steal aegis while you're over it)
+
+
+   potential deny:
+   lycan(auto deny by invis wolves), broodmother(army of broodmother's spiders), enigma(army of demonic conversions),
+   invoker(spirits),lone druid(bear),naga(illusions),np(nature call),pl(illusions),shadowshaman(serpent ward),
+   sniper(shrapnel, deny),terrorblade(illusions),veno(wards),visage(familiars),warlock(chaotic offering rosh pit, then deny), ]]
 
 require("libs.Utils")
 require("libs.ScriptConfig")
