@@ -1,16 +1,12 @@
--[[Auto_Aegis_Steal.lua Props to Moones for helping create this!]]-
 require("libs.Utils")
 require("libs.ScriptConfig")
 config = ScriptConfig.new()
 config:SetParameter("ToggleKey", "G", config.TYPE_HOTKEY)
-config:SetParameter("UseDisableKey", true)
 config:Load()
 
 local toggleKey   = config.ToggleKey
-local disableKey  = config.UseDisableKey
 local reg         = false
 local activ       = true
-local disabl      = false
 local monitor     = client.screenSize.x/1600
 local F15         = drawMgr:CreateFont("F15","Tahoma",15*monitor,550*monitor)
 local F14         = drawMgr:CreateFont("F14","Tahoma",14*monitor,550*monitor) 
@@ -26,18 +22,13 @@ end
 
 function Tick(tick)
 	if not SleepCheck() then return end
+	sleep(5)
+	if not active then return end
+
 	local me = entityList:GetMyHero()
 	if not me then return end
 
-	local DisableKey = 0x20
-
-	if IsKeyDown(DisableKey) and disableKey then
-		disabl = true
-	else
-		disabl = false
-	end
-
-	if disabl or not activ then
+	if not activ then
 		statusText2.visible = false
 		statusText.visible  = true
 	else
