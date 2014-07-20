@@ -25,9 +25,9 @@ function Key(msg,code)
 	if IsKeyDown(toggleKey) then
 		activ = not activ
 		if activ then
-			statusText = "(" .. hotkeyText .. ") Steal Aegis: On"
+			statusText.text = "(" .. hotkeyText .. ") Steal Aegis: On"
 		else
-			statusText = "(" .. hotkeyText .. ") Steal Aegis: Off"
+			statusText.text = "(" .. hotkeyText .. ") Steal Aegis: Off"
 		end
 	end
 end
