@@ -18,11 +18,19 @@ function Key(msg,code)
 	if IsKeyDown(toggleKey) then
 		activ = not activ
 	end
+
+	if not activ then
+		statusText2.visible = false
+		statusText.visible  = true
+	else
+		statusText.visible  = false
+		statusText2.visible = true
+	end
 end
 
 function Tick(tick)
 	if not SleepCheck() then return end
-	sleep(5)
+	Sleep(5)
 	if not active then return end
 
 	local me = entityList:GetMyHero()
