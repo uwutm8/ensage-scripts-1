@@ -58,6 +58,7 @@ function Tick(tick)
 		-- search for aegis
 		for i,v in ipairs(items) do
 			local IH = v.itemHolds
+-- default_aegis = {Vector(2413.25,-239.313,4.1875)}
 -- default position for aegis: 2413.25,-239.313,4.1875
 			if IH.name == "item_aegis" and GetDistance2D(v,me) <= 150 then
 						entityList:GetMyPlayer():TakeItem(v)
