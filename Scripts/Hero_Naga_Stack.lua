@@ -1,348 +1,162 @@
-require("libs.Utils")
+--[[		Config			]]
+-- config can be found in Scripts\config\stackscript.txt
+
+--[[		Code			]]
 require("libs.ScriptConfig")
 
 config = ScriptConfig.new()
-config:SetParameter("ToggleKey", "G", config.TYPE_HOTKEY)
+config:SetParameter("Hotkey", "O", config.TYPE_HOTKEY)
+config:SetParameter("GUI-X", 5)
+config:SetParameter("GUI-Y", 50)
 config:Load()
 
-local toggleKey   = config.ToggleKey
+hotkey = config.Hotkey
+x,y = config["GUI-X"], config["GUI-Y"]
+
+ownRange = config.OwnRange
+enemyRange = config.EnemyRange
+towerRange = config.TowerRange
 
 
-local hotkeyText -- toggleKey might be a keycode number, so string.char will throw an error!!
-if string.byte("A") <= toggleKey and toggleKey <= string.byte("Z") then
-    hotkeyText = string.char(toggleKey)
+startTime = 49                         -- game time seconds when start to stack (from wait point)
+stack_route_radiant = {Vector(-2991,198,256), Vector(-7264,-6752,270), Vector(-2144,-480,256)}  -- triangle route for radiant ( 1:pull point, 2: fountain, 3: wait point )
+stack_route_dire = {Vector(4447,-1950,127), Vector(6975,6742,256), Vector(5083,-1433,127)}      -- triangle route for dire  1:pull point, 2: fountain, 3: wait point )
+ 
+activated = true -- toggle by hotkey if activated
+creepHandle = nil -- current creep
+font = drawMgr:CreateFont("stackfont","Arial",14,500) -- font for drawing
+if string.byte("A") <= hotkey and hotkey <= string.byte("Z") then
+	defaultText = "StackScript: select your creep and press \""..string.char(hotkey).."\"." -- default text to display
 else
-    hotkeyText = ""..toggleKey
+	defaultText = "StackScript: select your creep and press keycode \""..hotkey.."\"." -- default text to display
 end
+text = drawMgr:CreateText(x,y,-1,defaultText,font) -- text object to draw
+route = nil -- currently active route
+ordered = false -- only order once
+registered = false -- only register our callbacks once
 
--- SCRIPT SETTINGS
-local sleep = 50
-local x0,y0=5,50      -- gui pos
-local dude1=nil
--- STACKING SETTINGS
-local n_cycles = 8                            -- number of stack cycles
-local start_time = 49                         -- game time seconds when start to stack (from wait point)
-
-
-local radiant_bot_tower = Vector(4705,-6112,256)
-local radiant_mid_tower = Vector(-1574,-1394,127)
-local radiant_top_tower = Vector(-5922,1780,256)
-
-local dire_bot_tower = Vector(6108,-1827,256)
-local dire_mid_tower = Vector(954,469,128)
-local dire_top_tower = Vector(-4810,6186,256)
--- 
-local stack_route_direa = {Vector(5083,-1433,127),Vector(4447,-1950,127), Vector(-3040,3360,256)}      -- triangle route for dire  1:pull point, 2: fountain, 3: wait point )
-local stack_route_direa2 = {Vector(4311,-1011,127),Vector(4536,-1930,127), Vector(6975,6742,256)}      
-local stack_route_dire1 = {Vector(-4863,4253,256),Vector(-4443,3521,256), Vector(1302,5150,256)}  -- triangle route for radiant ( 1:wait, 2: pull, 3: die )
-local stack_route_dire2 = {Vector(-3147,5459,256),Vector(-3057,4596,256), Vector(-32,1687,271)}
-local stack_route_dire3 = {Vector(-1818,3382,129),Vector(-1478,2608,127), Vector(5334,-4183,256)}
-local stack_route_dire4 = {Vector(708,5140,256),Vector(-304,3893,256), Vector(2258,4324,127)}
-local stack_route_dire5 = {Vector(441,4030,256),Vector(1176,3337,256), Vector(2637,4384,128)}
-
-local stack_route_direwait = {Vector(3936,-3296,256),Vector(3936,-3296,256), Vector(3936,-3296,256)}  -- 
-
-
---stack_route_radianta = {Vector(-2144,-480,256),Vector(-2991,198,256), Vector(512,-5595,256)}
-local stack_route_radianta = {Vector(-2080,416,256),Vector(-2991,198,256), Vector(-7264,-6752,270)}
-local stack_route_radianta2 = {Vector(-2144,-480,256),Vector(-2948,250,256), Vector(512,-5595,256)}
-
-local stack_route_radiant1 = {Vector(-1327,-2701,127),Vector(-1174,-4023,127), Vector(-3540,-3054,127)}  -- triangle route for radiant ( 1:wait, 2: pull, 3: die )
-local stack_route_radiant2 = {Vector(1503,-2785,256),Vector(-449,-2927,127), Vector(-641,-1263,127)}  -- 
-local stack_route_radiant3 = {Vector(1662,-4964,256),Vector(1675,-3714,256), Vector(-459,4735,256)}  -- 
-local stack_route_radiant4 = {Vector(3936,-3296,256),Vector(3165,-3459,256), Vector(1939,-2334,101)}  -- 
-local stack_route_radiant5 = {Vector(4238,-4811,256),Vector(3065,-4672,256), Vector(3754,-6369,256)}  -- 
-
-local p1=nil
---GLOBALS
-local activ = false
-local melocation = nil
-local dude1route =nil
-local dude2route =nil
-local dude3route =nil
-
-local route = nil
-local creep = nil
-local do_stack = false
-local sleeptick = nil
-local msg = nil -- msg = { TEXT, TICK, TIME, SIZE, COLOR, X, Y }
-local order_tick = nil
-local anc = nil
-local pressed = false
-local stack_n = 0
-local currentSelection = nil
-local count = 1
-local dude1=nil
-local dude2=nil
-local dude3=nil
 
 function Key(msg,code)
-    if client.chat or client.console then return end
-    if IsKeyDown(toggleKey) then
-        activ = not activ
-        if activ then
-            msg = {"naga creep off. ", tick, 4000, 24, 0xFF0000FF}
-        else
-            msg = {"naga creep on. ", tick, 4000, 24, 0xFF0000FF}
-        end
-    end
+	if msg ~= KEY_UP or client.chat or not client.connected or client.loading then
+		return
+	end
+
+	if code == hotkey then
+		activated = not activated
+		if activated then
+
+			-- check if we're ingame and already have a valid team
+			local player = entityList:GetMyPlayer()
+			if not player or player.team == LuaEntity.TEAM_NONE then
+				activated = false
+				return
+			end
+
+			-- check if the player has currently selected a controllable creep
+			local selection = player.selection
+			if #selection ~= 1 or (selection[1].type ~= LuaEntity.TYPE_CREEP and selection[1].type ~= LuaEntity.TYPE_NPC) or not selection[1].controllable then
+				activated = false
+				return
+			end
+
+			if player.team == LuaEntity.TEAM_DIRE then
+				route = stack_route_dire
+			elseif player.team == LuaEntity.TEAM_RADIANT then
+				route = stack_route_radiant
+			end
+
+			-- maybe we're an observer only, so there's no valid route
+			if not route then 
+				activated = false
+				return
+			end
+
+			creepHandle = selection[1].handle
+			player:Move(route[3])
+			text.text = "StackScript: moving creep to pull location."
+		else
+			text.text = defaultText
+		end
+	end
 end
 
-function Tick( tick )
+sleeptick = 0
+function Tick(tick)
+	if sleeptick > tick or not activated or not creepHandle then
+		return
+	end
+	sleeptick = tick + 250
 
-    local me = entityList:GetMyHero()
+	local player = entityList:GetMyPlayer()
+	if not player then
+		return
+	end
 
-    if client.chat or client.console then return end
-    if not me then return end
+	-- check if our creep is still existing and alive
+	local creep = entityList:GetEntity(creepHandle)
+	if not creep or not creep.alive then
+		text.text = "StackScript: creep dead."
+		activated = false
+		creepHandle = nil
+		return
+	end
+	-- do the stacking if not paused, correct timing and creep is already @waiting position
+	if not ordered and (client.gameTime % 60 >= startTime) and not client.paused and isPosEqual(creep.position,route[3],2) then
+		text.text = "StackScript: stack ordered."
+		ordered = true
 
-    if me.name == nil then return end
-    if sleepTick and sleepTick > tick then return end
- --       if me.team == TEAM_RADIANT then home = radiant else home = dire end
-
- if activ then
-
-    if client.gameTime % 60 == 30 then-- and (do_stack) then 
-        for t=1,6 do
-            if me:GetAbility(t) and me:GetAbility(t).name == "naga_siren_mirror_image" and me:GetAbility(t).state == STATE_READY then
-                me:SafeCastAbility(me:GetAbility(t))
-                sleepTick= GetTick() +300
-                return 
-            end
-        end
-
-    end
-    print(me.x,me.y,me.z)
-    for t=1,6 do
-        local iSpell =  me:FindSpell("naga_siren_mirror_image")
-        local iLevel = iSpell.level 
-
-        if me:GetAbility(t).name == "naga_siren_mirror_image" then
-        --print("!!@#@!#")
-        if math.ceil(me:GetAbility(t).cd - 0.7) <=  math.ceil(iSpell:GetCooldown(iLevel)) - 1 and math.ceil(me:GetAbility(t).cd - 0.7) >=  math.ceil(iSpell:GetCooldown(iLevel)) - 2  then
-            count=1
-        --print("1")
-        if me.team == TEAM_RADIANT then
-            melocation = "radiant_top"
---print("2")
-if GetDistance2D(me,radiant_top_tower) > GetDistance2D(me,radiant_mid_tower)then
-    melocation = "radiant_mid"
-end
-if GetDistance2D(me,radiant_mid_tower) > GetDistance2D(me,radiant_bot_tower)then
-    melocation = "radiant_bot"
-end
-if melocation == "radiant_top" then
-    dude1route = stack_route_radianta
-    dude2route = stack_route_radianta2
-    dude3route = stack_route_radiant2
-elseif melocation== "radiant_mid" then
-    dude1route = stack_route_radianta
-    dude2route = stack_route_radianta2
-    dude3route = stack_route_radiant2
-elseif melocation== "radiant_bot" then
-    dude1route = stack_route_radiant3
-    dude2route = stack_route_radiant4
-    dude3route = stack_route_radiant5
-                --print("sdfsdfds")
-                --print(stack_route_dire4[1])
-                --print(dude1route[1])
-
-            end
-
-        --home = radiant
-
-    else 
---print("3")
-melocation = "dire_top"
-
-if GetDistance2D(me,dire_top_tower) > GetDistance2D(me,dire_mid_tower)then
-    melocation = "dire_mid"
-end
-if GetDistance2D(me,dire_mid_tower) > GetDistance2D(me,dire_bot_tower)then
-    melocation = "dire_bot"
-end
-if melocation == "dire_top" then
-    dude1route = stack_route_dire1
-    dude2route = stack_route_dire2
-    dude3route = stack_route_dire3
-elseif melocation== "dire_mid" then
-    dude1route = stack_route_dire5
-    dude2route = stack_route_direa
-    dude3route = stack_route_direa2
-elseif melocation== "dire_bot" then
-    dude1route = stack_route_direwait
-    dude2route = stack_route_direa
-    dude3route = stack_route_direa2
+		local selection = player.selection
+		-- select our pull creep
+		player:Select(creep)
+		-- move the triangle route
+		player:Move(route[1],false)
+		player:Move(route[2],true)
+		player:Move(route[3],true)
+		-- reselect our former selection
+		player:Select(selection[1])
+		for i = 2, #selection, 1 do
+			player:SelectAdd(selection[i])
+		end
+	elseif ordered and (client.gameTime % 60 < startTime) then
+		ordered = false
+		text.text = "StackScript: waiting."
+	end
 end
 
-
-
-
+-- check if creep is already @ wait position
+function isPosEqual(v1, v2, d)
+	return (v1-v2).length <= d
 end
 
+-- reset all stuff after leaving a game
+function Close()
+	text.text = defaultText
+	text.visible = false
+	creepHandle = nil
+	route = nil
+	activated = false
+	ordered = false
 
-
-
-
-
---print("5")
-
-
-            if client.gameTime % 60 <= 45 then-- and (do_stack) then 
---print("time")
-for i, v in ipairs(entityList:FindEntities({type=TYPE_HERO,team=TEAM_ALLEYS,visible=true,illusion=true})) do   
-    if v.health > 0 then
-  --                      print("count")
-    --                    print(count)
-    if count == 1 then
-        dude1=v
-        count =2
-                            --print("dd1")
-                        elseif count == 2 then
-                            dude2=v
-                            count =3
-
-                        elseif count == 3 then
-                            dude3=v
-                            count =4
-                        end
-
-                    end
-
-                end
-
---print("23")
-if dude1 then
-                    --dude1:Move(stack_route_radiant3[1])
-                    --print("dddddd1")
-                    dude1:Move(dude1route[1])
-                    --dude1:Move(stack_route_radiant3[1])
-                    --print("1")
-                    --print(dude1route[1])
-                end
-                if dude2 then
-                    dude2:Move(dude2route[1])
-                    --print("2")
-                    --dude2:Move(stack_route_radiant4[1])
-                end
-                if dude3 then
-                    dude3:Move(dude3route[1])
-                   -- print("3")
-                    --dude3:Move(stack_route_radiant5[1])
-                end
-            end
-        end
-
-    end
+	script:UnregisterEvent(EVENT_TICK)
+	script:UnregisterEvent(EVENT_KEY)
+	registered = false
 end
 
+-- register our callbacks
+function Load()
+	if registered then return end
 
---
-
---print(me.x,me.y,me.z)
-
-
-if (client.gameTime % 60 == start_time) then-- and (do_stack) then  
-    if dude1 and dude1.health>0 then
-
-        dude1:Move(dude1route[2])
-        QueueNextAction()
-        dude1:Move(dude1route[3])
-
-        dude2:Move(dude2route[2])
-        QueueNextAction()
-        dude1:Move(dude2route[3])
-
-        dude3:Move(dude3route[2])
-        QueueNextAction()
-        dude1:Move(dude3route[3])
-
-    --dude1:Move(stack_route_radiant3[2])
-    --dude2:Move(stack_route_radiant4[2])
-    --dude3:Move(stack_route_radiant5[2])
-end
+	script:RegisterEvent(EVENT_TICK,Tick)
+	script:RegisterEvent(EVENT_KEY,Key)
+	text.visible = true
+	registered = true
 end
 
+-- Callbacks are only needed while ingame...
+script:RegisterEvent(EVENT_CLOSE,Close)
+script:RegisterEvent(EVENT_LOAD,Load)
 
-
-
-if dude1 then
-    if isPosEqual(dude1, dude1route[2], 3) then
-    --dude1:Move(stack_route_radiant3[3])
-    dude1:Move(dude1route[3])
+-- load if already ingame
+if client.connected and not client.loading then
+	Load()
 end
-if isPosEqual(dude2, dude2route[2], 3) then
-    --dude2:Move(stack_route_radiant4[3])
-    dude2:Move(dude2route[3])
-end
-if isPosEqual(dude3, dude3route[2], 3) then
-    --dude3:Move(stack_route_radiant5[3])
-    dude3:Move(dude3route[3])
-end
-end
-
-
-
-end
-sleepTick = GetTick() + 300
---count = 1
-
-end
-
-
-function Frame( tick ) 
-    local text_size = 16
-    local msg_time = 3000  
-    local msg_color = 0xFFFFFFFF
-    local msg_x, msg_y
-    if do_stack then
-        drawManager:DrawText(x0,y0,text_size,0xFFFFFFFF,"Creep will stack.")
-    end
-    if not msg or not msg[2] then          
-        return
-    else           
-        if msg[3] then
-            msg_time = msg[3]
-        end
-        if msg[4] then
-            text_size = msg[4]
-        end
-        if msg[5] then
-            msg_color = msg[5]
-        end
-        if msg[6] then
-            msg_x = msg[6].x
-            msg_y = msg[6].y
-        else
-            msg_x, msg_y = x0, y0 + text_size
-        end                            
-    end
-    if (tick < msg[2] + msg_time) then
-        drawManager:DrawText(msg_x, msg_y, text_size, msg_color, msg[1])
-    elseif msg and tick > msg[2] + msg_time then
-        msg = nil              
-    end
-end
-
-function restoreSelection(selection)
-    for i,v in ipairs(selection) do
-        if v.health>0 and v.visible then
-            if i == 1 then
-                Select(v)
-            else
-                SelectAdd(v)
-            end
-        end
-    end
-end
-
-function isPosEqual(p1, p2, d)
-    if p1.x-d <= p2.x and p1.x+d >= p2.x and p1.y-d <= p2.y and p1.y+d >= p2.y and p1.z-d<=p2.z and p1.z+d>=p2.z then
-        return true
-    else   
-        return false
-    end
-end
-
-script:RegisterEvent(EVENT_TICK, Frame)
-script:RegisterEvent(EVENT_TICK, Tick)
-script:RegisterEvent(EVENT_KEY,Key)
