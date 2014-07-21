@@ -17,7 +17,6 @@ end
 
 -- SCRIPT SETTINGS
 local sleep = 50
-local hotkey = 0x4F
 local x0,y0=5,50      -- gui pos
 local dude1=nil
 -- STACKING SETTINGS
