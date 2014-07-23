@@ -11,7 +11,8 @@ local activ       = false
 local monitor     = client.screenSize.x/1600
 local F15         = drawMgr:CreateFont("F15","Tahoma",15*monitor,550*monitor)
 local F14         = drawMgr:CreateFont("F14","Tahoma",14*monitor,550*monitor) 
-local statusText  = drawMgr:CreateText(10*monitor,515*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Hex: Off",F14)
+local statusText  = drawMgr:CreateText(10*monitor,515*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Hex: Off",F14) statusText.visible = true
+
 
 local hotkeyText
 if string.byte("A") <= toggleKey and toggleKey <= string.byte("Z") then
@@ -34,7 +35,7 @@ function Key(msg,code)
 	end
 end
 
-function zTick(tick)
+function Tick(tick)
 	local me = entityList:GetMyHero()
 
 	if not SleepCheck() then return end	Sleep(50)
@@ -116,13 +117,11 @@ function Disable(me,disable,nativeSpell,disable2,nativeSpell2)
 				if SpellFindz:CanBeCasted() and GetDistance2D(v,me) < disable2x.castRange then
 					if activ then
 						me:SafeCastAbility(disable2x,v)
-						script:RegisterEvent(EVENT_TICK,qna)
 						Sleep(500)
 						break
 					end
 					if blink and blink.cd > 11 then
 						me:SafeCastAbility(disable2x,v)
-						script:RegisterEvent(EVENT_TICK,qna)
 						Sleep(500)
 						break
 					end
@@ -131,7 +130,6 @@ function Disable(me,disable,nativeSpell,disable2,nativeSpell2)
 						local iLevelz = iSpellz.level 
 						if iSpellz.level > 0 and iSpellz.cd > iSpellz:GetCooldown(iLevelz) - 1 then
 							me:SafeCastAbility(disable2x,v)
-							script:RegisterEvent(EVENT_TICK,qna)
 							Sleep(500)
 							break
 						end
@@ -142,29 +140,15 @@ function Disable(me,disable,nativeSpell,disable2,nativeSpell2)
 	end
 end
 
-function qna(tick)
-	client:ExecuteCmd("+sixense_left_shift")
-	if aa == nil then
-		sleep = tick + 1000
-		aa = 1
-	end
-	if tick > sleep then
-		client:ExecuteCmd("-sixense_left_shift")
-		aa = nil
-		script:UnregisterEvent(qna)
-	end
-	
-end
-
 function Load()
 	if PlayingGame() then
 		local me = entityList:GetMyHero()
 		if not me then 
 			script:Disable()
-			statusText.text = ""
 		else
+			statusText.visible = true
 			reg = true
-			script:RegisterEvent(EVENT_TICK,zTick)
+			script:RegisterEvent(EVENT_TICK,Tick)
 			script:RegisterEvent(EVENT_KEY,Key)
 			script:UnregisterEvent(Load)
 		end
@@ -172,13 +156,14 @@ function Load()
 end
 
 function GameClose()
+	collectgarbage("collect")
 	if reg then
 		script:UnregisterEvent(Tick)
 		script:UnregisterEvent(Key)
 		script:RegisterEvent(EVENT_TICK,Load)
 		reg = false
+		statusText.visible = false
 	end
-	collectgarbage("collect")
 end
 
 script:RegisterEvent(EVENT_CLOSE,GameClose)
