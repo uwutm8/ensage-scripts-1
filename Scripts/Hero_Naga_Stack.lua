@@ -7,6 +7,8 @@ config:Load()
 
 local toggleKey   = config.ToggleKey
 local monitor     = client.screenSize.x/1600
+local reg         = false
+local activ       = false
 local F15         = drawMgr:CreateFont("F15","Tahoma",15*monitor,550*monitor)
 local F14         = drawMgr:CreateFont("F14","Tahoma",14*monitor,550*monitor) 
 local statusText  = drawMgr:CreateText(10*monitor,530*monitor,-1,"(" .. string.char(toggleKey) .. ") Naga Stack: Off",F14)
@@ -331,6 +333,33 @@ function isPosEqual(v1, v2, d)
 	return (v1-v2).length <= d
 end
 
-script:RegisterEvent(EVENT_TICK, Frame)
-script:RegisterEvent(EVENT_TICK, Tick)
-script:RegisterEvent(EVENT_KEY,Key)
+function Load()
+	if PlayingGame() then
+		local me = entityList:GetMyHero()
+		if me.classId ~= CDOTA_Unit_Hero_Naga_siren then 
+			script:Disable() 
+		else
+			statusText.visible = true
+			reg = true
+			script:RegisterEvent(EVENT_FRAME,Frame)
+			script:RegisterEvent(EVENT_TICK,Tick)
+			script:RegisterEvent(EVENT_KEY,Key)
+			script:UnregisterEvent(Load)
+		end
+	end
+end
+
+function GameClose()
+	collectgarbage("collect")
+	if reg then
+		script:UnregisterEvent(Tick)
+		script:UnregisterEvent(Frame)
+		script:UnregisterEvent(Key)
+		script:RegisterEvent(EVENT_TICK,Load)
+		reg = false
+		statusText.visible = false
+	end
+end
+
+script:RegisterEvent(EVENT_CLOSE,GameClose)
+script:RegisterEvent(EVENT_TICK,Load)
