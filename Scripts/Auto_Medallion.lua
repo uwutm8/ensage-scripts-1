@@ -1,7 +1,7 @@
 require("libs.Utils")
 require("libs.ScriptConfig")
 config = ScriptConfig.new()
-config:SetParameter("Active", "U", config.TYPE_HOTKEY)
+config:SetParameter("Active", "N", config.TYPE_HOTKEY)
 config:Load()
 
 local toggleKey   = config.Active
@@ -55,12 +55,14 @@ function Load()
 		local me = entityList:GetMyHero()
 		if not me then
 			script:Disable()
+			statusText.text = ""
 		else
 			reg = true
 			script:RegisterEvent(EVENT_TICK,Tick)
 			script:RegisterEvent(EVENT_KEY,Key)
 			script:UnregisterEvent(Load)
 		end
+	end
 end
 
 function GameClose()
