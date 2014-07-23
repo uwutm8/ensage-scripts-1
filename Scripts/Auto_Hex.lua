@@ -11,7 +11,7 @@ local activ       = false
 local monitor     = client.screenSize.x/1600
 local F15         = drawMgr:CreateFont("F15","Tahoma",15*monitor,550*monitor)
 local F14         = drawMgr:CreateFont("F14","Tahoma",14*monitor,550*monitor) 
-local statusText  = drawMgr:CreateText(10*monitor,530*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Hex: Off",F14)
+local statusText  = drawMgr:CreateText(10*monitor,515*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Hex: Off",F14)
 
 local hotkeyText
 if string.byte("A") <= toggleKey and toggleKey <= string.byte("Z") then
@@ -161,8 +161,8 @@ function Load()
 		local me = entityList:GetMyHero()
 		if not me then 
 			script:Disable()
+			statusText.text = ""
 		else
-
 			reg = true
 			script:RegisterEvent(EVENT_TICK,zTick)
 			script:RegisterEvent(EVENT_KEY,Key)
