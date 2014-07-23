@@ -63,7 +63,6 @@ function Tick(tick)
 end
 
 function Load()
-
 	if PlayingGame() then
 		local me = entityList:GetMyHero()
 		if me.classId ~= CDOTA_Unit_Hero_Lich then 
@@ -75,17 +74,18 @@ function Load()
 			script:RegisterEvent(EVENT_KEY,Key)
 			script:UnregisterEvent(Load)
 		end
-
+	end
 end
 
 function GameClose()
+	collectgarbage("collect")
 	if reg then
 		script:UnregisterEvent(Tick)
 		script:UnregisterEvent(Key)
 		script:RegisterEvent(EVENT_TICK,Load)
 		reg = false
+		statusText.visible = false
 	end
-	collectgarbage("collect")
 end
 
 script:RegisterEvent(EVENT_CLOSE,GameClose)
