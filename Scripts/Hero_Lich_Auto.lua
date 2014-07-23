@@ -6,7 +6,7 @@ config:Load()
 
 local toggleKey   = config.ToggleKey
 local reg         = false
-local activ       = false
+local activ		  = false
 local disabl      = false
 local monitor     = client.screenSize.x/1600
 local F15         = drawMgr:CreateFont("F15","Tahoma",15*monitor,550*monitor)
@@ -67,11 +67,9 @@ function Load()
 	if PlayingGame() then
 		local me = entityList:GetMyHero()
 		if me.classId ~= CDOTA_Unit_Hero_Lich then 
-			statusText.text = ""
 			script:Disable() 
 		else
 			statusText.visible = true
-
 			reg = true
 			script:RegisterEvent(EVENT_TICK,Tick)
 			script:RegisterEvent(EVENT_KEY,Key)
