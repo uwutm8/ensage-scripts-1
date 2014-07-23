@@ -6,7 +6,7 @@ config:Load()
 
 local toggleKey   = config.ToggleKey
 local reg         = false
-local activ		  = false
+local activ       = false
 local disabl      = false
 local monitor     = client.screenSize.x/1600
 local F15         = drawMgr:CreateFont("F15","Tahoma",15*monitor,550*monitor)
