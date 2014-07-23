@@ -2,47 +2,39 @@ require("libs.Utils")
 require("libs.ScriptConfig")
 config = ScriptConfig.new()
 config:SetParameter("Active", "U", config.TYPE_HOTKEY)
-config:SetParameter("UseDisableKey", true)
 config:Load()
 
 local toggleKey   = config.Active
 local disableKey  = config.UseDisableKey
 local reg         = false
-local disabl      = false
 local activ       = true
 local monitor     = client.screenSize.x/1600
 local F15         = drawMgr:CreateFont("F15","Tahoma",15*monitor,550*monitor)
 local F14         = drawMgr:CreateFont("F14","Tahoma",14*monitor,550*monitor) 
-local statusText  = drawMgr:CreateText(10*monitor,545*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Medallion: Off",F14)
-local statusText2 = drawMgr:CreateText(10*monitor,545*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Medallion: On",F14)
+local statusText  = drawMgr:CreateText(10*monitor,530*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Medallion: Off",F14)
 
+local hotkeyText
+if string.byte("A") <= toggleKey and toggleKey <= string.byte("Z") then
+	hotkeyText = string.char(toggleKey)
+else
+	hotkeyText = ""..toggleKey
+end
 function Key(msg,code)
-	if client.chat or client.console then return end
+	if client.chat or client.console or client.loading then return end
 	if IsKeyDown(toggleKey) then
 		activ = not activ
+		if activ then
+			statusText.text = "(" .. hotkeyText .. ") Auto Medallion: On"
+		else
+			statusText.text = "(" .. hotkeyText .. ") Auto Medallion: Off"
+		end
 	end
 end
 
 function Tick(tick)
 	if not SleepCheck() then return end	Sleep(125)
 	local me = entityList:GetMyHero()
-	if not me then return end
-
-	local DisableKey = 0x20
-
-	if IsKeyDown(DisableKey) and disableKey then
-		disabl = true
-	else
-		disabl = false
-	end
-
-	if disabl or not activ then
-		statusText2.visible = false
-		statusText.visible  = true
-	else
-		statusText.visible  = false
-		statusText2.visible = true
-	end
+	if not (me or activ) then return end
 
 	if me.alive and not me:IsChanneling() then
 		local moc     = me:FindItem("item_medallion_of_courage")
@@ -62,8 +54,6 @@ function Load()
 	if PlayingGame() then
 		local me = entityList:GetMyHero()
 		if not me then
-			statusText.visible = false
-			statusText2.visible = false
 			script:Disable()
 		else
 			reg = true
@@ -71,7 +61,6 @@ function Load()
 			script:RegisterEvent(EVENT_KEY,Key)
 			script:UnregisterEvent(Load)
 		end
-	end
 end
 
 function GameClose()
