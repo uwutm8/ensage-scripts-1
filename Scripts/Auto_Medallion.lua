@@ -11,7 +11,7 @@ local activ       = true
 local monitor     = client.screenSize.x/1600
 local F15         = drawMgr:CreateFont("F15","Tahoma",15*monitor,550*monitor)
 local F14         = drawMgr:CreateFont("F14","Tahoma",14*monitor,550*monitor) 
-local statusText  = drawMgr:CreateText(10*monitor,530*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Medallion: Off",F14)
+local statusText  = drawMgr:CreateText(10*monitor,530*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Medallion: Off",F14) statusText.visible = false
 
 local hotkeyText
 if string.byte("A") <= toggleKey and toggleKey <= string.byte("Z") then
@@ -19,6 +19,7 @@ if string.byte("A") <= toggleKey and toggleKey <= string.byte("Z") then
 else
 	hotkeyText = ""..toggleKey
 end
+
 function Key(msg,code)
 	if client.chat or client.console or client.loading then return end
 	if IsKeyDown(toggleKey) then
@@ -55,8 +56,8 @@ function Load()
 		local me = entityList:GetMyHero()
 		if not me then
 			script:Disable()
-			statusText.text = ""
 		else
+			statusText.visible = true
 			reg = true
 			script:RegisterEvent(EVENT_TICK,Tick)
 			script:RegisterEvent(EVENT_KEY,Key)
@@ -66,13 +67,14 @@ function Load()
 end
 
 function GameClose()
+	collectgarbage("collect")
 	if reg then
 		script:UnregisterEvent(Tick)
 		script:UnregisterEvent(Key)
 		script:RegisterEvent(EVENT_TICK,Load)
 		reg = false
+		statusText.visible = false
 	end
-	collectgarbage("collect")
 end
 
 script:RegisterEvent(EVENT_CLOSE,GameClose)
