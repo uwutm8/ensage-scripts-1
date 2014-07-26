@@ -6,14 +6,17 @@ config:Load()
 
 local toggleKey   = config.ToggleKey
 local reg         = false
-local activ		  = false
-local effect      = nil
+local activ		  = true
 local monitor     = client.screenSize.x/1600
 local F15         = drawMgr:CreateFont("F15","Tahoma",15*monitor,550*monitor)
 local F14         = drawMgr:CreateFont("F14","Tahoma",14*monitor,550*monitor) 
-local statusText  = drawMgr:CreateText(10*monitor,560*monitor,-1,"(" .. string.char(toggleKey) .. ") TA: Off",F14) statusText.visible = false
-local blah = false
-
+local statusText  = drawMgr:CreateText(10*monitor,560*monitor,-1,"(" .. string.char(toggleKey) .. ") TA: On",F14) statusText.visible = false
+level0 = false
+level1 = false
+level2 = false
+level3 = false
+level4 = false
+effect = nil
 local hotkeyText
 if string.byte("A") <= toggleKey and toggleKey <= string.byte("Z") then
 	hotkeyText = string.char(toggleKey)
@@ -29,6 +32,11 @@ function Key(msg,code)
 			statusText.text = "(" .. hotkeyText .. ") TA: On"
 		else
 			effect = nil
+			level0 = false
+			level1 = false
+			level2 = false
+			level3 = false
+			level4 = false
 			statusText.text = "(" .. hotkeyText .. ") TA: Off"
 		end
 	end
@@ -43,13 +51,33 @@ function Tick(tick)
 	psy = me:GetAbility(3)
 	psyrange = {60,120,180,240}
 	bonus = psyrange[psy.level]
-	effect = Effect(me,"range_display")
 
-	if bonus == nil and blah == false then
-		blah = true
+
+	if bonus == nil and level0 == false and psy.level == 0 then
+		effect = Effect(me,"range_display")
 		effect:SetVector(1,Vector(me.attackRange,0,0))
-	elseif bonus ~= nil
+		level0 = true
+	elseif bonus ~= nil and level1 == false and psy.level == 1 then
+		effect = nil
+		effect = Effect(me,"range_display")
 		effect:SetVector(1,Vector(me.attackRange + bonus,0,0))
+		level1 = true
+	elseif bonus ~= nil and level2 == false and psy.level == 2 then
+
+		effect = nil
+		effect = Effect(me,"range_display")
+		effect:SetVector(1,Vector(me.attackRange + bonus,0,0))
+		level2= true
+	elseif bonus ~= nil and level3 == false and psy.level == 3 then
+		effect = nil
+		effect = Effect(me,"range_display")
+		effect:SetVector(1,Vector(me.attackRange + bonus,0,0))
+		level3 = true
+	elseif bonus ~= nil and level4 == false and psy.level == 4 then
+		effect = nil
+		effect = Effect(me,"range_display")
+		effect:SetVector(1,Vector(me.attackRange + bonus,0,0))
+		level4 = true
 	end
 
 	for i,v in ipairs(enemies) do
@@ -87,6 +115,11 @@ function GameClose()
 		script:RegisterEvent(EVENT_TICK,Load)
 		reg = false
 		effect = nil
+		level0 = false
+		level1 = false
+		level2 = false
+		level3 = false
+		level4 = false
 		statusText.visible = false
 	end
 end
