@@ -51,7 +51,8 @@ function Tick(tick)
 	psy = me:GetAbility(3)
 	psyrange = {60,120,180,240}
 	bonus = psyrange[psy.level]
-
+	splitrange = {590,630,670,710}
+	bonus2 = splitrange[psy.level]
 
 	if bonus == nil and level0 == false and psy.level == 0 then
 		effect = Effect(me,"range_display")
@@ -82,15 +83,25 @@ function Tick(tick)
 
 	for i,v in ipairs(enemies) do
 
-		local visible1,screenPos1 = client:ScreenPosition(me.position);
-		local visible2,screenPos2 = client:ScreenPosition(v.position);
+		if psy.level == 0 and GetDistance2D(v,me) <= me.attackRange then
+			local visible1,screenPos1 = client:ScreenPosition(me.position);
+			local visible2,screenPos2 = client:ScreenPosition(v.position);
 
-		if visible1 and visible2 then
-			drawMgr:CreateLine(screenPos1.x,screenPos1.y, screenPos2.x, screenPos2.y,0x0080FFFF)
+			if visible1 and visible2 then
+				drawMgr:CreateLine(screenPos1.x,screenPos1.y, screenPos2.x, screenPos2.y,0xFF99FFFF)
+			end
+		elseif psy.level > 0 then
+			if GetDistance2D(v,me) <= (me.attackRange + bonus + bonus2) then
+				local visible1,screenPos1 = client:ScreenPosition(me.position);
+				local visible2,screenPos2 = client:ScreenPosition(v.position);
+
+				if visible1 and visible2 then
+					drawMgr:CreateLine(screenPos1.x,screenPos1.y, screenPos2.x, screenPos2.y,0xFF99FFFF)
+				end
+			end
 		end
 	end
 end
-
 
 function Load()
 	if PlayingGame() then
