@@ -145,8 +145,6 @@ function GameClose()
 	-- kill all known lines
 	lines = {}
 	collectgarbage("collect")
-	-- hide text
-	statusText.visible = false
 	-- reset variables
 	lastLevel = -1
 end
