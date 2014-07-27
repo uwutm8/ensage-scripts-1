@@ -45,6 +45,8 @@ function Tick(tick)
 	if me.classId ~= CDOTA_Unit_Hero_TemplarAssassin then 
 		script:Disable() 
 		return
+	else
+		statusText.visible = true
 	end
 	-- get our spell
 	local psy = me:GetAbility(3)
