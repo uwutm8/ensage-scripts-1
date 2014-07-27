@@ -76,7 +76,7 @@ function Tick(tick)
 	for i,v in ipairs(enemies) do
 		local handle = v.handle
 		-- hide line if enemy is not visible or dead
-		if GetDistance2D(v,me) > (me.attackRange + bonus + bonus2) or not v.visible or not v.alive then
+		if GetDistance2D(v,me) >= (me.attackRange + bonus + bonus2 + 50) or not v.visible or not v.alive then
 			if lines[handle] then lines[handle].visible = false end
 		else
 			-- check if we are visible
