@@ -31,11 +31,6 @@ function Key(msg,code)
 			statusText.text = "(" .. hotkeyText .. ") TA: On"
 		else
 			effect = nil
-			level0 = false
-			level1 = false
-			level2 = false
-			level3 = false
-			level4 = false
 			statusText.text = "(" .. hotkeyText .. ") TA: Off"
 		end
 	end
@@ -49,6 +44,8 @@ function Tick(tick)
 	if me.classId ~= CDOTA_Unit_Hero_TemplarAssassin then 
 		script:Disable() 
 		return
+	else
+		statusText.visible = true
 	end
 	-- get our spell
 	local psy = me:GetAbility(3)
