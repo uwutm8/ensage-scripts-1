@@ -76,10 +76,14 @@ function Tick(tick)
 	end
 	-- get enemy heroes
 	local enemies = entityList:GetEntities({type=LuaEntity.TYPE_HERO,team = me:GetEnemyTeam(),illusion=false})
+	local nearestEnemy = nil
+	local nearestDistance = nil
+	local validEnemies = {}
 	for i,v in ipairs(enemies) do
 		local handle = v.handle
 		-- hide line if enemy is not visible or dead
-		if GetDistance2D(v,me) > (me.attackRange + bonus + bonus2) or not v.visible or not v.alive then
+		local distance = GetDistance2D(v,me)
+		if distance > (me.attackRange + bonus + bonus2) or not v.visible or not v.alive then
 			if lines[handle] then lines[handle].visible = false end
 		else
 			-- check if we are visible
@@ -96,6 +100,12 @@ function Tick(tick)
 						lines[handle].visible = true
 						lines[handle]:SetPosition(screenPos1,screenPos2)
 					end
+					-- check for width then
+					table.insert(validEnemies,v)
+					if not nearestEnemy or distance < nearestDistance then
+						nearestEnemy = v
+						nearestDistance = distance
+					end
 				else
 					-- hide line if enemy is not on screen
 					if lines[handle] then lines[handle].visible = false end
@@ -106,6 +116,31 @@ function Tick(tick)
 			end
 		end
 	end
+	-- change color of line if width is okay
+	if nearestEnemy then
+		for _,v in ipairs(validEnemies) do
+			local handle = v.handle
+			-- nearest enemy is always "valid"
+			if v == nearestEnemy then
+				lines[handle].color = 0xFF99FFFF
+			-- if angle is below the width then it will hit the enemy
+			elseif AngleBelow(me,nearestEnemy,v,5) then
+				lines[handle].color = 0xFF99FFFF
+			-- else mark it in another color
+			else
+				lines[handle].color = 0x6D76F2FF
+			end
+		end
+	end
+end
+
+function AngleBelow(myHero,nearestHero,targetHero,angle)
+	local myPos = Vector2D(myHero.position.x,myHero.position.y)
+	local nearestHeroPos = Vector2D(nearestHero.position.x,nearestHero.position.y)
+	local targetHeroPos = Vector2D(targetHero.position.x,targetHero.position.y)
+	local t1 = (nearestHeroPos - myPos)
+	local t2 = (targetHeroPos - myPos)
+	return math.deg(math.atan2(t2.y, t2.x) - math.atan2(t1.y, t1.x)) <= angle
 end
 
 function GameClose()
@@ -119,6 +154,7 @@ function GameClose()
 	-- reset variables
 	lastLevel = -1
 end
+
 
 script:RegisterEvent(EVENT_CLOSE,GameClose)
 script:RegisterEvent(EVENT_TICK,Tick)
