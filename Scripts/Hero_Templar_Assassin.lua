@@ -74,7 +74,6 @@ function Tick(tick)
 		effect = Effect(me,"range_display")
 		effect:SetVector(1,Vector(me.attackRange + bonus,0,0))
 		collectgarbage("collect") -- to remove the old attack circle!
-		print(me.attackRange)
 	end
 	-- get enemy heroes
 	local enemies = entityList:GetEntities({type=LuaEntity.TYPE_HERO,team = me:GetEnemyTeam(),illusion=false})
