@@ -38,14 +38,14 @@ end
 
 
 function Tick(tick)
-	if not SleepCheck() then return end	Sleep(15)
+	if not SleepCheck() then return end	Sleep(50)
 	local me = entityList:GetMyHero()
 	if not me then return end
 
 	if me.alive and not me:IsChanneling() then
 
 
-		local enemies   = entityList:GetEntities({type=LuaEntity.TYPE_HERO,team = 5-me.team,alive=true,visible=true,illusion=false})
+		local enemies   = entityList:GetEntities({type=LuaEntity.TYPE_HERO,alive=true,visible=true,team=me:GetEnemyTeam(),illusion=false})
 		for i,v in ipairs(enemies) do
 
 			local blink    = v:FindItem("item_blink")
@@ -56,7 +56,7 @@ function Tick(tick)
 			local shackles = me:GetAbility(3)
 			local serpents = me:GetAbility(4)
 
-			if not SI or MI and v.health > 0 then
+			if not (SI or MI) and v.health > 0 then
 				if shackles:CanBeCasted() then
 					if GetDistance2D(v,me) < shackles.castRange + 25 then
 						if activ or (blink and blink.cd > 11) then
