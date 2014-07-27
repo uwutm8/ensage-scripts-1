@@ -31,12 +31,8 @@ function Key(msg,code)
 			statusText.text = "(" .. hotkeyText .. ") TA: On"
 		else
 			effect = nil
-			level0 = false
-			level1 = false
-			level2 = false
-			level3 = false
-			level4 = false
 			statusText.text = "(" .. hotkeyText .. ") TA: Off"
+			collectgarbage("collect") -- to remove the old attack circle!
 		end
 	end
 end
@@ -83,7 +79,7 @@ function Tick(tick)
 		local handle = v.handle
 		-- hide line if enemy is not visible or dead
 		local distance = GetDistance2D(v,me)
-		if distance > (me.attackRange + bonus + bonus2) or not v.visible or not v.alive then
+		if distance >= (me.attackRange + bonus + bonus2 + 50) or not v.visible or not v.alive then
 			if lines[handle] then lines[handle].visible = false end
 		else
 			-- check if we are visible
