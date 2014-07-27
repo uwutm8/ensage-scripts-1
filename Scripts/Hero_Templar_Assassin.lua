@@ -55,6 +55,9 @@ function Tick(tick)
 	local currentLevel = psy.level
 	-- if we haven't created an effect for the current level -> do it! (also save stats)
 	if lastLevel ~= currentLevel then
+		-- if attack range is not set yet...
+		if me.attackRange == 0 then	return end
+
 		lastLevel = currentLevel
 		if currentLevel == 0 then
 			bonus = 0
@@ -69,6 +72,7 @@ function Tick(tick)
 		effect = Effect(me,"range_display")
 		effect:SetVector(1,Vector(me.attackRange + bonus,0,0))
 		collectgarbage("collect") -- to remove the old attack circle!
+		print(me.attackRange)
 	end
 	-- get enemy heroes
 	local enemies = entityList:GetEntities({type=LuaEntity.TYPE_HERO,team = me:GetEnemyTeam(),illusion=false})
@@ -79,7 +83,7 @@ function Tick(tick)
 		local handle = v.handle
 		-- hide line if enemy is not visible or dead
 		local distance = GetDistance2D(v,me)
-		if distance >= (me.attackRange + bonus + bonus2 + 50) or not v.visible or not v.alive then
+		if distance >= (me.attackRange + bonus + bonus2) or not v.visible or not v.alive then
 			if lines[handle] then lines[handle].visible = false end
 		else
 			-- check if we are visible
@@ -120,7 +124,7 @@ function Tick(tick)
 			if v == nearestEnemy then
 				lines[handle].color = 0xFF99FFFF
 			-- if angle is below the width then it will hit the enemy
-			elseif AngleBelow(me,nearestEnemy,v,5) then
+			elseif AngleBelow(me,nearestEnemy,v,5.5) then
 				lines[handle].color = 0xFF99FFFF
 			-- else mark it in another color
 			else
@@ -136,7 +140,7 @@ function AngleBelow(myHero,nearestHero,targetHero,angle)
 	local targetHeroPos = Vector2D(targetHero.position.x,targetHero.position.y)
 	local t1 = (nearestHeroPos - myPos)
 	local t2 = (targetHeroPos - myPos)
-	return math.deg(math.atan2(t2.y, t2.x) - math.atan2(t1.y, t1.x)) <= angle
+	return math.abs(math.deg(math.atan2(t2.y, t2.x) - math.atan2(t1.y, t1.x))) <= angle
 end
 
 function GameClose()
