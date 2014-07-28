@@ -38,6 +38,9 @@ function Tick(tick)
 	if not (me and activ) then return end
 	if me.alive and not me:IsChanneling() then
 		local roa     = me:FindItem("item_rod_of_atos")
+		if roa then
+			statusText.visible = true
+		end
 		local enemies = entityList:GetEntities({type=LuaEntity.TYPE_HERO,team = 5-me.team,alive=true,visible=true,illusion=false})
 		for i,v in ipairs(enemies) do
 
@@ -56,7 +59,6 @@ function Load()
 		if not me then
 			script:Disable()
 		else
-			statusText.visible = true
 			reg = true
 			script:RegisterEvent(EVENT_TICK,Tick)
 			script:RegisterEvent(EVENT_KEY,Key)
