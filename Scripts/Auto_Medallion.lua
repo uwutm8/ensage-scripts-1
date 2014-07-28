@@ -11,7 +11,7 @@ local activ       = true
 local monitor     = client.screenSize.x/1600
 local F15         = drawMgr:CreateFont("F15","Tahoma",15*monitor,550*monitor)
 local F14         = drawMgr:CreateFont("F14","Tahoma",14*monitor,550*monitor) 
-local statusText  = drawMgr:CreateText(10*monitor,245*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Medallion: Off",F14) statusText.visible = false
+local statusText  = drawMgr:CreateText(10*monitor,260*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Medallion: On",F14) statusText.visible = false
 
 local hotkeyText
 if string.byte("A") <= toggleKey and toggleKey <= string.byte("Z") then
