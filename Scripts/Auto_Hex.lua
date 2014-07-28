@@ -11,7 +11,7 @@ local activ       = false
 local monitor     = client.screenSize.x/1600
 local F15         = drawMgr:CreateFont("F15","Tahoma",15*monitor,550*monitor)
 local F14         = drawMgr:CreateFont("F14","Tahoma",14*monitor,550*monitor) 
-local statusText  = drawMgr:CreateText(10*monitor,515*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Hex: Off",F14) statusText.visible = true
+local statusText  = drawMgr:CreateText(10*monitor,530*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Hex: Off",F14) statusText.visible = false
 
 
 local hotkeyText
@@ -55,8 +55,12 @@ end
 
 function Disable(me,disable,nativeSpell,disable2,nativeSpell2)
 	local sheep     = me:FindItem("item_sheepstick")
+	local ID = me.classId
 
 	local enemies   = entityList:GetEntities({type=LuaEntity.TYPE_HERO,team = 5-me.team,alive=true,visible=true,illusion=false})
+	if ID == (CDOTA_Unit_Hero_Lion or CDOTA_Unit_Hero_ShadowShaman) or sheepstick then
+		statusText.visible = true
+	end
 	for i,v in ipairs(enemies) do
 		local blink = v:FindItem("item_blink")
 		local SI    = v:IsSilenced()
@@ -146,7 +150,6 @@ function Load()
 		if not me then 
 			script:Disable()
 		else
-			statusText.visible = true
 			reg = true
 			script:RegisterEvent(EVENT_TICK,Tick)
 			script:RegisterEvent(EVENT_KEY,Key)
