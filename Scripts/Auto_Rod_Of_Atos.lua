@@ -43,8 +43,10 @@ function Tick(tick)
 		end
 		local enemies = entityList:GetEntities({type=LuaEntity.TYPE_HERO,team = 5-me.team,alive=true,visible=true,illusion=false})
 		for i,v in ipairs(enemies) do
+			local MI = v:IsMagicImmune()
+			local ST = v:IsStunned()
 
-			if GetDistance2D(v,me) <= 1200 and roa and roa:CanBeCasted() and activ then
+			if GetDistance2D(v,me) <= 1200 and roa and roa:CanBeCasted() and activ and not (MI or ST) then
 				me:SafeCastItem("item_rod_of_atos",v)
 				Sleep(500)
 				break
