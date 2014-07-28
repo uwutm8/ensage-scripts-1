@@ -11,7 +11,7 @@ local activ       = true
 local monitor     = client.screenSize.x/1600
 local F15         = drawMgr:CreateFont("F15","Tahoma",15*monitor,550*monitor)
 local F14         = drawMgr:CreateFont("F14","Tahoma",14*monitor,550*monitor) 
-local statusText  = drawMgr:CreateText(10*monitor,530*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Medallion: Off",F14) statusText.visible = false
+local statusText  = drawMgr:CreateText(10*monitor,245*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Medallion: Off",F14) statusText.visible = false
 
 local hotkeyText
 if string.byte("A") <= toggleKey and toggleKey <= string.byte("Z") then
@@ -33,12 +33,14 @@ function Key(msg,code)
 end
 
 function Tick(tick)
-	if not SleepCheck() then return end	Sleep(125)
+	if not SleepCheck() then return end	Sleep(30)
 	local me = entityList:GetMyHero()
-	if not (me or activ) then return end
-
+	if not (me and activ) then return end
 	if me.alive and not me:IsChanneling() then
 		local moc     = me:FindItem("item_medallion_of_courage")
+		if moc then
+			statusText.visible = true
+		end
 		local enemies = entityList:GetEntities({type=LuaEntity.TYPE_HERO,team = 5-me.team,alive=true,visible=true,illusion=false})
 		for i,v in ipairs(enemies) do
 
@@ -57,7 +59,6 @@ function Load()
 		if not me then
 			script:Disable()
 		else
-			statusText.visible = true
 			reg = true
 			script:RegisterEvent(EVENT_TICK,Tick)
 			script:RegisterEvent(EVENT_KEY,Key)
