@@ -56,36 +56,40 @@ function Tick(tick)
 			local shackles = me:GetAbility(3)
 			local serpents = me:GetAbility(4)
 
-			if not (SI or MI) and v.health > 0 then
-				if shackles:CanBeCasted() then
-					if GetDistance2D(v,me) < shackles.castRange + 25 then
-						if activ or (blink and blink.cd > 11) then
-							me:SafeCastAbility(shackles,v)
-							Sleep(300)
-							break
-						elseif Initiation[v.name] then
-							local iSpellz = v:FindSpell(Initiation[v.name].Spell)
-							local iLevelz = iSpellz.level 
-							if iSpellz.level > 0 and iSpellz.cd > iSpellz:GetCooldown(iLevelz) - 1 then
-								me:SafeCastAbility(shackles,v)
-								Sleep(300)
-								break
-							end
-						end
-					end
-				elseif hex:CanBeCasted() and GetDistance2D(v,me) < hex.castRange + 25 then
-					if activ or (blink and blink.cd > 11) then
+			if not (SI or MI or ST) and v.health > 0 then
+				if (blink and blink.cd > 11) and hex:CanBeCasted() and GetDistance2D(v,me) < hex.castRange + 25 then
+					me:SafeCastAbility(hex,v)
+					Sleep(300)
+					break
+				elseif (blink and blink.cd > 11) and shackles:CanBeCasted() and GetDistance2D(v,me) < shackles.castRange + 25 then
+					me:SafeCastAbility(shackles,v)
+					Sleep(300)
+					break
+				elseif Initiation[v.name] and hex:CanBeCasted() and GetDistance2D(v,me) < hex.castRange + 25 then
+					local iSpell = v:FindSpell(Initiation[v.name].Spell)
+					local iLevel = iSpell.level 
+					if iSpell.level > 0 and iSpell.cd > iSpell:GetCooldown(iLevel) - 1 then
 						me:SafeCastAbility(hex,v)
 						Sleep(300)
 						break
-					elseif Initiation[v.name] then
-						local iSpell = v:FindSpell(Initiation[v.name].Spell)
-						local iLevel = iSpell.level 
-						if iSpell.level > 0 and iSpell.cd > iSpell:GetCooldown(iLevel) - 1 then
-							me:SafeCastAbility(hex,v)
-							Sleep(300)
-							break
-						end
+					end
+				end
+
+				if Initiation[v.name] and shackles:CanBeCasted() and GetDistance2D(v,me) < shackles.castRange + 25 then
+					local iSpell = v:FindSpell(Initiation[v.name].Spell)
+					local iLevel = iSpell.level 
+					if iSpell.level > 0 and iSpell.cd > iSpell:GetCooldown(iLevel) - 1 then
+						me:SafeCastAbility(shackles,v)
+						Sleep(300)
+						break
+					end
+				end
+
+				if activ then
+					if shackles:CanBeCasted() and GetDistance2D(v,me) < shackles.castRange + 25 then
+						me:SafeCastAbility(shackles,v)
+					elseif hex:CanBeCasted() and GetDistance2D(v,me) < hex.castRange + 25 then
+						me:SafeCastAbility(hex,v)
 					end
 				end
 			end
