@@ -45,18 +45,23 @@ function Tick(tick)
 		end
 		local enemies = entityList:GetEntities({type=LuaEntity.TYPE_HERO,team = 5-me.team,alive=true,visible=true,illusion=false})
 		for i,v in ipairs(enemies) do
+			local MI = v:IsMagicImmune()
+			local ST = v:IsStunned()
+
 			local blink = v:FindItem("item_blink")
-			if GetDistance2D(v,me) <= 700 + 25 and euls and euls:CanBeCasted() and blink and (blink:CanBeCasted() or blink.cd > 11) then
-				me:SafeCastItem("item_cyclone",v)
-				Sleep(500)
-				break
-			elseif Initiation[v.name] then
-				local iSpell =  v:FindSpell(Initiation[v.name].Spell)
-				local iLevel = iSpell.level 
-				if iSpell.level > 0 and iSpell.cd > iSpell:GetCooldown(iLevel) - 1 then
+			if not (MI or ST) then
+				if GetDistance2D(v,me) <= 700 + 25 and euls and euls:CanBeCasted() and blink and (blink:CanBeCasted() or blink.cd > 11) then
 					me:SafeCastItem("item_cyclone",v)
 					Sleep(500)
 					break
+				elseif Initiation[v.name] and not MI then
+					local iSpell =  v:FindSpell(Initiation[v.name].Spell)
+					local iLevel = iSpell.level 
+					if iSpell.level > 0 and iSpell.cd > iSpell:GetCooldown(iLevel) - 1 then
+						me:SafeCastItem("item_cyclone",v)
+						Sleep(500)
+						break
+					end
 				end
 			end
 		end
