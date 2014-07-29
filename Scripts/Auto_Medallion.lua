@@ -43,8 +43,9 @@ function Tick(tick)
 		end
 		local enemies = entityList:GetEntities({type=LuaEntity.TYPE_HERO,team = 5-me.team,alive=true,visible=true,illusion=false})
 		for i,v in ipairs(enemies) do
+			local invis    = me:IsInvisible()
 
-			if GetDistance2D(v,me) <= 1000 and moc and moc:CanBeCasted() and activ and not me.abilityPhase and v.recentDamage > 0 then
+			if GetDistance2D(v,me) <= 1000 and moc and moc:CanBeCasted() and activ and not invis and v.recentDamage > 0 then
 				me:SafeCastItem("item_medallion_of_courage",v)
 				Sleep(500)
 				break
