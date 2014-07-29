@@ -65,7 +65,9 @@ function Disable(me,disable,nativeSpell,disable2,nativeSpell2)
 		local blink = v:FindItem("item_blink")
 		local SI    = v:IsSilenced()
 		local MI    = v:IsMagicImmune()
-		if not SI or MI then
+			local invis    = me:IsInvisible()
+
+		if not (SI or MI or invis) then
 			if GetDistance2D(v,me) < 800 and sheep and sheep:CanBeCasted() then
 				if activ then
 					me:SafeCastItem("item_sheepstick",v)
