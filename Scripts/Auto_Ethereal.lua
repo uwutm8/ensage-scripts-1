@@ -44,7 +44,9 @@ function Tick(tick)
 		local enemies = entityList:GetEntities({type=LuaEntity.TYPE_HERO,team = 5-me.team,alive=true,visible=true,illusion=false})
 		for i,v in ipairs(enemies) do
 			local MI = v:IsMagicImmune()
-			if GetDistance2D(v,me) <= 800 and eth and eth:CanBeCasted() and activ and not MI then
+			local invis    = me:IsInvisible()
+
+			if GetDistance2D(v,me) <= 800 and eth and eth:CanBeCasted() and activ and not (MI or invis) then
 				me:SafeCastItem("item_ethereal_blade",v)
 				Sleep(500)
 				break
