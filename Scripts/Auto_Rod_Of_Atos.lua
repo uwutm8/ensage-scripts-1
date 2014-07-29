@@ -45,8 +45,9 @@ function Tick(tick)
 		for i,v in ipairs(enemies) do
 			local MI = v:IsMagicImmune()
 			local ST = v:IsStunned()
+			local invis    = me:IsInvisible()
 
-			if GetDistance2D(v,me) <= 1200 and roa and roa:CanBeCasted() and activ and not (MI or ST) then
+			if GetDistance2D(v,me) <= 1200 and roa and roa:CanBeCasted() and activ and not (MI or ST or invis) then
 				me:SafeCastItem("item_rod_of_atos",v)
 				Sleep(500)
 				break
