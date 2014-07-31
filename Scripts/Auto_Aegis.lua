@@ -24,7 +24,7 @@
    local monitor     = client.screenSize.x/1600
    local F15         = drawMgr:CreateFont("F15","Tahoma",15*monitor,550*monitor)
    local F14         = drawMgr:CreateFont("F14","Tahoma",14*monitor,550*monitor) 
-   local statusText  = drawMgr:CreateText(10*monitor,515*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Aegis: Off",F14) statusText.visible = true
+   local statusText  = drawMgr:CreateText(10*monitor,515*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Aegis: Off",F14) statusText.visible = false
 
 local hotkeyText -- toggleKey might be a keycode number, so string.char will throw an error!!
 if string.byte("A") <= toggleKey and toggleKey <= string.byte("Z") then
@@ -50,7 +50,11 @@ function Tick(tick)
 	Sleep(15)
 	if PlayingGame() then
 		local me = entityList:GetMyHero()
+		local blink      = me:FindItem("item_blink")
 		if not (activ or me) then return end
+		if me.classId == (CDOTA_Unit_Hero_EmberSpirit or CDOTA_Unit_Hero_AntiMage or CDOTA_Unit_Hero_Rattletrap or CDOTA_Unit_Hero_FacelessVoid or CDOTA_Unit_Hero_Magnataur or CDOTA_Unit_Hero_SandKing or CDOTA_Unit_Hero_QueenOfPain or CDOTA_Unit_Hero_Morphling or CDOTA_Unit_Hero_Naga_Siren or CDOTA_Unit_Hero_StormSpirit) or blink then
+			statusText.visible = true
+		end
 		if me.alive and not me:IsChanneling() then
 			local items = entityList:GetEntities({type=LuaEntity.TYPE_ITEM_PHYSICAL})
 			for i,v in ipairs(items) do
