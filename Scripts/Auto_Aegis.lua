@@ -1,30 +1,30 @@
---[[potential steal spell special instructions for death of rosh:
-   earth spirit(?)
-   spectre(Haunt->reality illusion closest to aegis->steal->spectral dagger out)
-   timbersaw(cut trees on cliff, timberchain to other side and steal aegis while you're over it)
+--[[Steal
+    earth spirit combo, spectre(Haunt->reality illusion closest to aegis->steal->spectral dagger out)
 
-   if sniper/rattletrap providing vision, use jugg ult, etc
+    Steal with vision
+    if sniper/rattletrap providing vision, use jugg ult, etc
+
+   	Deny
 	auto spawn veno ward and deny
-   potential deny:
-   lycan(auto deny by invis wolves), broodmother(army of broodmother's spiders), enigma(army of demonic conversions),
-   invoker(spirits),lone druid(bear),naga(illusions),np(nature call),pl(illusions),shadowshaman(serpent ward),
-   sniper(shrapnel, deny),terrorblade(illusions),veno(wards),visage(familiars),warlock(chaotic offering rosh pit, then deny), ]]
+    lycan(auto deny by invis wolves), broodmother(army of broodmother's spiders), enigma(army of demonic conversions),
+    invoker(spirits),lone druid(bear),naga(illusions),np(nature call),pl(illusions),shadowshaman(serpent ward),
+    sniper(shrapnel, deny),terrorblade(illusions),veno(wards),visage(familiars),warlock(chaotic offering rosh pit, then deny), ]]
 
 
-   require("libs.Utils")
-   require("libs.ScriptConfig")
+    require("libs.Utils")
+    require("libs.ScriptConfig")
 
-   config = ScriptConfig.new()
-   config:SetParameter("ToggleKey", "H", config.TYPE_HOTKEY)
-   config:Load()
+    config = ScriptConfig.new()
+    config:SetParameter("ToggleKey", "H", config.TYPE_HOTKEY)
+    config:Load()
 
-   local toggleKey   = config.ToggleKey
-   local reg         = false
-   local activ       = false
-   local monitor     = client.screenSize.x/1600
-   local F15         = drawMgr:CreateFont("F15","Tahoma",15*monitor,550*monitor)
-   local F14         = drawMgr:CreateFont("F14","Tahoma",14*monitor,550*monitor) 
-   local statusText  = drawMgr:CreateText(10*monitor,515*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Aegis: Off",F14) statusText.visible = false
+    local toggleKey   = config.ToggleKey
+    local reg         = false
+    local activ       = false
+    local monitor     = client.screenSize.x/1600
+    local F15         = drawMgr:CreateFont("F15","Tahoma",15*monitor,550*monitor)
+    local F14         = drawMgr:CreateFont("F14","Tahoma",14*monitor,550*monitor) 
+    local statusText  = drawMgr:CreateText(10*monitor,515*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Aegis: Off",F14)
 
 local hotkeyText -- toggleKey might be a keycode number, so string.char will throw an error!!
 if string.byte("A") <= toggleKey and toggleKey <= string.byte("Z") then
@@ -51,10 +51,7 @@ function Tick(tick)
 	if PlayingGame() then
 		local me = entityList:GetMyHero()
 		local blink      = me:FindItem("item_blink")
-		if not (activ or me) then return end
-		if me.classId == (CDOTA_Unit_Hero_EmberSpirit or CDOTA_Unit_Hero_AntiMage or CDOTA_Unit_Hero_Rattletrap or CDOTA_Unit_Hero_FacelessVoid or CDOTA_Unit_Hero_Magnataur or CDOTA_Unit_Hero_SandKing or CDOTA_Unit_Hero_QueenOfPain or CDOTA_Unit_Hero_Morphling or CDOTA_Unit_Hero_Naga_Siren or CDOTA_Unit_Hero_StormSpirit) or blink then
-			statusText.visible = true
-		end
+		if not (activ and me) then return end
 		if me.alive and not me:IsChanneling() then
 			local items = entityList:GetEntities({type=LuaEntity.TYPE_ITEM_PHYSICAL})
 			for i,v in ipairs(items) do
@@ -128,6 +125,40 @@ function Roshan( kill )
 				local ball = me:GetAbility(4)
 				if ball:CanBeCasted() then
 					me:SafeCastAbility(ball,aegisloc)
+				end
+			elseif me.classId == CDOTA_Unit_Hero_Sniper then
+				local takeaim = me:GetAbility(3)
+				aimrange = {100,200,300,400}
+				bonus = 0
+				if takeaim and takeaim.level > 0 then
+					bonus = aimrange[takeaim.level]
+				end
+				if GetDistance2D(aegisloc,me) <= me.attackRange + bonus then
+					local items = entityList:GetEntities({type=LuaEntity.TYPE_ITEM_PHYSICAL})
+					for i,v in ipairs(items) do
+						local IH = v.itemHolds
+						if IH.name == "item_aegis" then
+							me:Attack(v)
+							Sleep(500)
+							break
+						end
+					end
+				end
+			elseif me.classId == CDOTA_Unit_Hero_Venomancer then
+				local plagueward = me:GetAbility(3)
+				local ward = entityList:GetEntities({classId=CDOTA_BaseNPC_Venomancer_PlagueWard,alive = true,visible = true,controllable=true})
+				local items = entityList:GetEntities({type=LuaEntity.TYPE_ITEM_PHYSICAL})
+
+				if plagueward:CanBeCasted() then
+					me:SafeCastAbility(plagueward,sleightloc)
+					for i,v in ipairs(items) do
+						for l,k in ipairs(ward) do
+							local IH = v.itemHolds
+							if IH.name == "item_aegis" and GetDistance2D(v,me) <= k.castRange then
+								k:Attack(v)
+							end
+						end
+					end
 				end
 			end
 		end
