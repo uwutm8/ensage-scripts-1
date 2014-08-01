@@ -50,7 +50,7 @@ function Key(msg,code)
 end
 
 function Tick(tick)
-	if PlayingGame() and SleepCheck() then
+	if PlayingGame() and SleepCheck("one") then
 		Sleep(20,"one")
 		local me = entityList:GetMyHero()
 		local blink = me:FindItem("item_blink")
@@ -61,18 +61,19 @@ function Tick(tick)
 				local IH = v.itemHolds
 				if IH.name == "item_aegis" and GetDistance2D(v,me) <= 400 then
 					entityList:GetMyPlayer():TakeItem(v)
-					Sleep(500)
+					Sleep(200,"three")
 					break
 				end
 			end
 			if EmberRosh then
 				local sleight = me:GetAbility(2)
 				if sleight:CanBeCasted() then
-					Sleep(5000)
-					me:CastAbility(sleight,shortloc)
-					EmberRosh = false
+					Sleep(5000,"two")
+					if SleepCheck("two") then
+						me:CastAbility(sleight,shortloc)
+						EmberRosh = false
+					end
 				end
-
 			end
 		end
 	end
@@ -146,7 +147,6 @@ function Roshan( kill )
 						local IH = v.itemHolds
 						if IH.name == "item_aegis" then
 							me:Attack(v)
-							Sleep(500)
 							break
 						end
 					end
