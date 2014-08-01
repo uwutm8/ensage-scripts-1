@@ -8,23 +8,25 @@
 	auto spawn veno ward and deny
     lycan(auto deny by invis wolves), broodmother(army of broodmother's spiders), enigma(army of demonic conversions),
     invoker(spirits),lone druid(bear),naga(illusions),np(nature call),pl(illusions),shadowshaman(serpent ward),
-    sniper(shrapnel, deny),terrorblade(illusions),veno(wards),visage(familiars),warlock(chaotic offering rosh pit, then deny), ]]
+    sniper(shrapnel, deny),terrorblade(illusions),veno(wards),visage(familiars),warlock(chaotic offering rosh pit, then deny),
+
+    if 6 slotted then auto deny]]
 
 
-    require("libs.Utils")
-    require("libs.ScriptConfig")
+    	require("libs.Utils")
+    	require("libs.ScriptConfig")
 
-    config = ScriptConfig.new()
-    config:SetParameter("ToggleKey", "H", config.TYPE_HOTKEY)
-    config:Load()
+    	config = ScriptConfig.new()
+    	config:SetParameter("ToggleKey", "H", config.TYPE_HOTKEY)
+    	config:Load()
 
-    local toggleKey   = config.ToggleKey
-    local reg         = false
-    local activ       = false
-    local monitor     = client.screenSize.x/1600
-    local F15         = drawMgr:CreateFont("F15","Tahoma",15*monitor,550*monitor)
-    local F14         = drawMgr:CreateFont("F14","Tahoma",14*monitor,550*monitor) 
-    local statusText  = drawMgr:CreateText(10*monitor,515*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Aegis: Off",F14)
+    	local toggleKey   = config.ToggleKey
+    	local reg         = false
+    	local activ       = false
+    	local monitor     = client.screenSize.x/1600
+    	local F15         = drawMgr:CreateFont("F15","Tahoma",15*monitor,550*monitor)
+    	local F14         = drawMgr:CreateFont("F14","Tahoma",14*monitor,550*monitor) 
+    	local statusText  = drawMgr:CreateText(10*monitor,515*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Aegis: Off",F14)
 
 local hotkeyText -- toggleKey might be a keycode number, so string.char will throw an error!!
 if string.byte("A") <= toggleKey and toggleKey <= string.byte("Z") then
@@ -46,11 +48,9 @@ function Key(msg,code)
 end
 
 function Tick(tick)
-	if not SleepCheck() then return end
-	Sleep(15)
 	if PlayingGame() then
 		local me = entityList:GetMyHero()
-		local blink      = me:FindItem("item_blink")
+		local blink = me:FindItem("item_blink")
 		if not (activ and me) then return end
 		if me.alive and not me:IsChanneling() then
 			local items = entityList:GetEntities({type=LuaEntity.TYPE_ITEM_PHYSICAL})
@@ -79,7 +79,8 @@ function Roshan( kill )
 			elseif me.classId == CDOTA_Unit_Hero_EmberSpirit and GetDistance2D(sleightloc,me) <= 700 then
 				local sleight = me:GetAbility(2)
 				if sleight:CanBeCasted() then
-					me:SafeCastAbility(sleight,sleightloc)
+					Sleep(5000)
+					me:CastAbility(sleight,sleightloc)
 				end
 			elseif me.classId == CDOTA_Unit_Hero_AntiMage and GetDistance2D(aegisloc,me) <= 1150 then
 				local amblink = me:GetAbility(2)
