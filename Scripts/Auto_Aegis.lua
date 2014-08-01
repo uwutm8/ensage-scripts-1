@@ -26,7 +26,7 @@
     	local F15        = drawMgr:CreateFont("F15","Tahoma",15*monitor,550*monitor)
     	local F14        = drawMgr:CreateFont("F14","Tahoma",14*monitor,550*monitor) 
     	local statusText = drawMgr:CreateText(10*monitor,515*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Aegis: Off",F14)
-    	local EmberRosh  = false
+    	local EmberRosh  = 0
     	local aegisloc   = Vector(2413.25,-239.313,4.1875)
     	local shortloc   = Vector(2515,-124,3)
 
@@ -50,8 +50,7 @@ function Key(msg,code)
 end
 
 function Tick(tick)
-	if PlayingGame() and SleepCheck("one") then
-		Sleep(20,"one")
+	if PlayingGame() then
 		local me = entityList:GetMyHero()
 		local blink = me:FindItem("item_blink")
 		if not (activ and me) then return end
@@ -61,18 +60,24 @@ function Tick(tick)
 				local IH = v.itemHolds
 				if IH.name == "item_aegis" and GetDistance2D(v,me) <= 400 then
 					entityList:GetMyPlayer():TakeItem(v)
-					Sleep(200,"three")
 					break
 				end
 			end
-			if EmberRosh then
+			if EmberRosh == 1 then
 				local sleight = me:GetAbility(2)
 				if sleight:CanBeCasted() then
-					Sleep(5000,"two")
-					if SleepCheck("two") then
-						me:CastAbility(sleight,shortloc)
-						EmberRosh = false
-					end
+					Sleep(50,"two")
+					EmberRosh = 2
+				else
+					EmberRosh = 0
+				end
+			elseif EmberRosh == 2 then
+				local sleight = me:GetAbility(2)
+				if not sleight:CanBeCasted() then
+					EmberRosh = 0
+				elseif SleepCheck("two") then
+					me:CastAbility(sleight,shortloc)
+					EmberRosh = 0
 				end
 			end
 		end
@@ -88,7 +93,7 @@ function Roshan( kill )
 			if GetDistance2D(aegisloc,me) <= 1200 and blink and blink.cd == 0 then		
 				me:SafeCastItem(blink.name,aegisloc)
 			elseif me.classId == CDOTA_Unit_Hero_EmberSpirit and GetDistance2D(shortloc,me) <= 700 then
-				EmberRosh = true
+				EmberRosh = 1
 			elseif me.classId == CDOTA_Unit_Hero_AntiMage and GetDistance2D(aegisloc,me) <= 1150 then
 				local amblink = me:GetAbility(2)
 				if amblink:CanBeCasted() then
