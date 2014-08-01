@@ -12,7 +12,6 @@
 
     if 6 slotted then auto deny]]
 
-
     	require("libs.Utils")
     	require("libs.ScriptConfig")
 
@@ -20,14 +19,16 @@
     	config:SetParameter("ToggleKey", "H", config.TYPE_HOTKEY)
     	config:Load()
 
-    	local toggleKey   = config.ToggleKey
-    	local reg         = false
-    	local activ       = false
-    	local monitor     = client.screenSize.x/1600
-    	local F15         = drawMgr:CreateFont("F15","Tahoma",15*monitor,550*monitor)
-    	local F14         = drawMgr:CreateFont("F14","Tahoma",14*monitor,550*monitor) 
-    	local statusText  = drawMgr:CreateText(10*monitor,515*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Aegis: Off",F14)
-    	sleeptick = 0
+    	local toggleKey  = config.ToggleKey
+    	local reg        = false
+    	local activ      = false
+    	local monitor    = client.screenSize.x/1600
+    	local F15        = drawMgr:CreateFont("F15","Tahoma",15*monitor,550*monitor)
+    	local F14        = drawMgr:CreateFont("F14","Tahoma",14*monitor,550*monitor) 
+    	local statusText = drawMgr:CreateText(10*monitor,515*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Aegis: Off",F14)
+    	local EmberRosh  = false
+    	local aegisloc   = Vector(2413.25,-239.313,4.1875)
+    	local shortloc   = Vector(2515,-124,3)
 
 local hotkeyText -- toggleKey might be a keycode number, so string.char will throw an error!!
 if string.byte("A") <= toggleKey and toggleKey <= string.byte("Z") then
@@ -49,7 +50,7 @@ function Key(msg,code)
 end
 
 function Tick(tick)
-	if PlayingGame() and SleepCheck("one") then
+	if PlayingGame() and SleepCheck() then
 		Sleep(20,"one")
 		local me = entityList:GetMyHero()
 		local blink = me:FindItem("item_blink")
@@ -64,6 +65,15 @@ function Tick(tick)
 					break
 				end
 			end
+			if EmberRosh then
+				local sleight = me:GetAbility(2)
+				if sleight:CanBeCasted() then
+					Sleep(5000)
+					me:CastAbility(sleight,shortloc)
+					EmberRosh = false
+				end
+
+			end
 		end
 	end
 end
@@ -71,18 +81,13 @@ end
 function Roshan( kill )
 	if PlayingGame() then
 		local me = entityList:GetMyHero()
-		local aegisloc   = Vector(2413.25,-239.313,4.1875)
-		local sleightloc = Vector(2515,-124,3)
 		local blink      = me:FindItem("item_blink")
 
 		if kill.name == "dota_roshan_kill" and activ then
 			if GetDistance2D(aegisloc,me) <= 1200 and blink and blink.cd == 0 then		
 				me:SafeCastItem(blink.name,aegisloc)
-			elseif me.classId == CDOTA_Unit_Hero_EmberSpirit and GetDistance2D(sleightloc,me) <= 700 then
-				local sleight = me:GetAbility(2)
-				if sleight:CanBeCasted() then
-					me:CastAbility(sleight,sleightloc)
-				end
+			elseif me.classId == CDOTA_Unit_Hero_EmberSpirit and GetDistance2D(shortloc,me) <= 700 then
+				EmberRosh = true
 			elseif me.classId == CDOTA_Unit_Hero_AntiMage and GetDistance2D(aegisloc,me) <= 1150 then
 				local amblink = me:GetAbility(2)
 				if amblink:CanBeCasted() then
@@ -106,7 +111,7 @@ function Roshan( kill )
 			elseif me.classId == CDOTA_Unit_Hero_SandKing and GetDistance2D(aegisloc,me) <= 650 then
 				local burrow = me:GetAbility(1)
 				if burrow:CanBeCasted() then
-					me:SafeCastAbility(burrow,sleightloc)
+					me:SafeCastAbility(burrow,shortloc)
 				end
 			elseif me.classId == CDOTA_Unit_Hero_QueenOfPain and GetDistance2D(aegisloc,me) <= 1150 then
 				local qopblink = me:GetAbility(2)
@@ -152,7 +157,7 @@ function Roshan( kill )
 				local items = entityList:GetEntities({type=LuaEntity.TYPE_ITEM_PHYSICAL})
 
 				if plagueward:CanBeCasted() then
-					me:SafeCastAbility(plagueward,sleightloc)
+					me:SafeCastAbility(plagueward,shortloc)
 					for i,v in ipairs(items) do
 						for l,k in ipairs(ward) do
 							local IH = v.itemHolds
