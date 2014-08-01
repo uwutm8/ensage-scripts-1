@@ -27,6 +27,7 @@
     	local F15         = drawMgr:CreateFont("F15","Tahoma",15*monitor,550*monitor)
     	local F14         = drawMgr:CreateFont("F14","Tahoma",14*monitor,550*monitor) 
     	local statusText  = drawMgr:CreateText(10*monitor,515*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Aegis: Off",F14)
+    	sleeptick = 0
 
 local hotkeyText -- toggleKey might be a keycode number, so string.char will throw an error!!
 if string.byte("A") <= toggleKey and toggleKey <= string.byte("Z") then
@@ -48,7 +49,8 @@ function Key(msg,code)
 end
 
 function Tick(tick)
-	if PlayingGame() then
+	if PlayingGame() and SleepCheck("one") then
+		Sleep(20,"one")
 		local me = entityList:GetMyHero()
 		local blink = me:FindItem("item_blink")
 		if not (activ and me) then return end
@@ -79,7 +81,6 @@ function Roshan( kill )
 			elseif me.classId == CDOTA_Unit_Hero_EmberSpirit and GetDistance2D(sleightloc,me) <= 700 then
 				local sleight = me:GetAbility(2)
 				if sleight:CanBeCasted() then
-					Sleep(5000)
 					me:CastAbility(sleight,sleightloc)
 				end
 			elseif me.classId == CDOTA_Unit_Hero_AntiMage and GetDistance2D(aegisloc,me) <= 1150 then
