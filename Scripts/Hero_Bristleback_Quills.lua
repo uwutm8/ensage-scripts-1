@@ -48,7 +48,7 @@ function Tick(tick)
 			local quill    = me:GetAbility(2)
 
 			if activ and (v.health >= 0) and not (AI) then
-				if quill and quill:CanBeCasted() and GetDistance2D(v,me) <= quill.castRange then
+				if quill and quill:CanBeCasted() and GetDistance2D(v,me) <= quill.castRange - 25 then
 					me:SafeCastAbility(quill)
 					Sleep(300)
 					break
