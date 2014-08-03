@@ -23,7 +23,7 @@
     	local activ      = false
     	local monitor    = client.screenSize.x/1600
     	local F14        = drawMgr:CreateFont("F14","Tahoma",14*monitor,550*monitor) 
-    	local statusText = drawMgr:CreateText(10*monitor,590*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Aegis: Off",F14) statusText.visible = true
+    	local statusText = drawMgr:CreateText(10*monitor,590*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Aegis: Off",F14) statusText.visible = false
     	local EmberRosh  = 0
     	local aegisloc   = Vector(2413.25,-239.313,4.1875)
     	local shortloc   = Vector(2515,-124,3)
@@ -51,7 +51,9 @@ function Tick(tick)
 	if PlayingGame() then
 		local me    = entityList:GetMyHero()
 		local blink = me:FindItem("item_blink")
-		if not (activ and me) then return end
+		if blink then statusText.visible = true end
+		if ID == CDOTA_Unit_Hero_EmberSpirit or ID == CDOTA_Unit_Hero_AntiMage or ID == CDOTA_Unit_Hero_Rattletrap or ID == CDOTA_Unit_Hero_FacelessVoid or ID == CDOTA_Unit_Hero_Magnataur or ID == CDOTA_Unit_Hero_SandKing or ID == CDOTA_Unit_Hero_QueenOfPain or ID == CDOTA_Unit_Hero_Morphling or ID == CDOTA_Unit_Hero_Naga_Siren or ID == CDOTA_Unit_Hero_StormSpirit or ID == CDOTA_Unit_Hero_Sniper or ID == CDOTA_Unit_Hero_Venomancer then statusText.visible = true end
+		if not activ then return end
 		if me.alive and not me:IsChanneling() then
 			local items = entityList:GetEntities({type=LuaEntity.TYPE_ITEM_PHYSICAL})
 			for i,v in ipairs(items) do
@@ -86,58 +88,58 @@ function Roshan (kill)
 	if PlayingGame() then
 		local me    = entityList:GetMyHero()
 		local blink = me:FindItem("item_blink")
-
+		local ID    = me.classId
 		if kill.name == "dota_roshan_kill" and activ then
 			if GetDistance2D(aegisloc,me) <= 1200 and blink and blink.cd == 0 then		
 				me:SafeCastItem(blink.name,aegisloc)
-			elseif me.classId == CDOTA_Unit_Hero_EmberSpirit and GetDistance2D(shortloc,me) <= 700 then
+			elseif ID == CDOTA_Unit_Hero_EmberSpirit and GetDistance2D(shortloc,me) <= 700 then
 				EmberRosh = 1
-			elseif me.classId == CDOTA_Unit_Hero_AntiMage and GetDistance2D(aegisloc,me) <= 1150 then
+			elseif ID == CDOTA_Unit_Hero_AntiMage and GetDistance2D(aegisloc,me) <= 1150 then
 				local amblink = me:GetAbility(2)
 				if amblink:CanBeCasted() then
 					me:SafeCastAbility(amblink,aegisloc)
 				end
-			elseif me.classId == CDOTA_Unit_Hero_Rattletrap and GetDistance2D(aegisloc,me) <= 2000 then
+			elseif ID == CDOTA_Unit_Hero_Rattletrap and GetDistance2D(aegisloc,me) <= 2000 then
 				local hook = me:GetAbility(4)
 				if hook:CanBeCasted() then
 					me:SafeCastAbility(hook,aegisloc)
 				end
-			elseif me.classId == CDOTA_Unit_Hero_FacelessVoid and GetDistance2D(aegisloc,me) <= 1300 then
+			elseif ID == CDOTA_Unit_Hero_FacelessVoid and GetDistance2D(aegisloc,me) <= 1300 then
 				local timewalk = me:GetAbility(1)
 				if timewalk:CanBeCasted() then
 					me:SafeCastAbility(timewalk,aegisloc)
 				end
-			elseif me.classId == CDOTA_Unit_Hero_Magnataur and GetDistance2D(aegisloc,me) <= 1200 then
+			elseif ID == CDOTA_Unit_Hero_Magnataur and GetDistance2D(aegisloc,me) <= 1200 then
 				local skewer = me:GetAbility(3)
 				if skewer:CanBeCasted() then
 					me:SafeCastAbility(skewer,aegisloc)
 				end
-			elseif me.classId == CDOTA_Unit_Hero_SandKing and GetDistance2D(aegisloc,me) <= 650 then
+			elseif ID == CDOTA_Unit_Hero_SandKing and GetDistance2D(aegisloc,me) <= 650 then
 				local burrow = me:GetAbility(1)
 				if burrow:CanBeCasted() then
 					me:SafeCastAbility(burrow,shortloc)
 				end
-			elseif me.classId == CDOTA_Unit_Hero_QueenOfPain and GetDistance2D(aegisloc,me) <= 1150 then
+			elseif ID == CDOTA_Unit_Hero_QueenOfPain and GetDistance2D(aegisloc,me) <= 1150 then
 				local qopblink = me:GetAbility(2)
 				if qopblink:CanBeCasted() then
 					me:SafeCastAbility(qopblink,aegisloc)
 				end
-			elseif me.classId == CDOTA_Unit_Hero_Morphling and GetDistance2D(aegisloc,me) <= 1000 then
+			elseif ID == CDOTA_Unit_Hero_Morphling and GetDistance2D(aegisloc,me) <= 1000 then
 				local waveform = me:GetAbility(1)
 				if waveform:CanBeCasted() then
 					me:SafeCastAbility(waveform,aegisloc)
 				end
-			elseif me.classId == CDOTA_Unit_Hero_Naga_Siren and GetDistance2D(aegisloc,me) <= 1250 then
+			elseif ID == CDOTA_Unit_Hero_Naga_Siren and GetDistance2D(aegisloc,me) <= 1250 then
 				local sirensong = me:GetAbility(4)
 				if sirensong:CanBeCasted() then
 					me:SafeCastAbility(sirensong,aegisloc)
 				end
-			elseif me.classId == CDOTA_Unit_Hero_StormSpirit and GetDistance2D(aegisloc,me) <= 1000 then
+			elseif ID == CDOTA_Unit_Hero_StormSpirit and GetDistance2D(aegisloc,me) <= 1000 then
 				local ball = me:GetAbility(4)
 				if ball:CanBeCasted() then
 					me:SafeCastAbility(ball,aegisloc)
 				end
-			elseif me.classId == CDOTA_Unit_Hero_Sniper then
+			elseif ID == CDOTA_Unit_Hero_Sniper then
 				local takeaim = me:GetAbility(3)
 				aimrange = {100,200,300,400}
 				bonus = 0
@@ -154,7 +156,7 @@ function Roshan (kill)
 						end
 					end
 				end
-			elseif me.classId == CDOTA_Unit_Hero_Venomancer then
+			elseif ID == CDOTA_Unit_Hero_Venomancer then
 				local plagueward = me:GetAbility(3)
 				local ward = entityList:GetEntities({classId=CDOTA_BaseNPC_Venomancer_PlagueWard,alive = true,visible = true,controllable=true})
 				local items = entityList:GetEntities({type=LuaEntity.TYPE_ITEM_PHYSICAL})
