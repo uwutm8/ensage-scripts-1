@@ -9,7 +9,6 @@ local toggleKey   = config.Active
 local reg         = false
 local activ       = false
 local monitor     = client.screenSize.x/1600
-local F15         = drawMgr:CreateFont("F15","Tahoma",15*monitor,550*monitor)
 local F14         = drawMgr:CreateFont("F14","Tahoma",14*monitor,550*monitor) 
 local statusText  = drawMgr:CreateText(10*monitor,290*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Hex: Initators",F14) statusText.visible = false
 
@@ -36,13 +35,16 @@ function Key(msg,code)
 end
 
 function Tick(tick)
-	local me = entityList:GetMyHero()
+	local me    = entityList:GetMyHero()
+	local ID    = me.classId
+	local sheep = me:FindItem("item_sheepstick")
 
-	if not SleepCheck() then return end	Sleep(50)
-	if not me then return end
-	if me.alive and not me:IsChanneling() then
+	if ID == CDOTA_Unit_Hero_Lion or ID == CDOTA_Unit_Hero_ShadowShaman or sheep then
+		statusText.visible = true
+	end
 
-		local ID = me.classId
+	if PlayingGame() and me.alive and not (client.paused or me:IsChanneling()) then
+
 		if ID == CDOTA_Unit_Hero_Lion then
 			Disable(me,2,"lion_voodoo",1,"lion_impale")
 		elseif ID == CDOTA_Unit_Hero_ShadowShaman then
@@ -54,18 +56,14 @@ function Tick(tick)
 end
 
 function Disable(me,disable,nativeSpell,disable2,nativeSpell2)
-	local sheep     = me:FindItem("item_sheepstick")
-	local ID = me.classId
-
-	local enemies   = entityList:GetEntities({type=LuaEntity.TYPE_HERO,team = 5-me.team,alive=true,visible=true,illusion=false})
-	if ID == (CDOTA_Unit_Hero_Lion or CDOTA_Unit_Hero_ShadowShaman) or sheep then
-		statusText.visible = true
-	end
+	local sheep   = me:FindItem("item_sheepstick")
+	local enemies = entityList:GetEntities({type=LuaEntity.TYPE_HERO,team = 5-me.team,alive=true,visible=true,illusion=false})
+	
 	for i,v in ipairs(enemies) do
 		local blink = v:FindItem("item_blink")
 		local SI    = v:IsSilenced()
 		local MI    = v:IsMagicImmune()
-			local invis    = me:IsInvisible()
+		local invis = me:IsInvisible()
 
 		if not (SI or MI or invis) then
 			if GetDistance2D(v,me) < 800 and sheep and sheep:CanBeCasted() then
