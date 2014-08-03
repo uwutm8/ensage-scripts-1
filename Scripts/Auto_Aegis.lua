@@ -20,7 +20,6 @@
     	config:Load()
 
     	local toggleKey  = config.ToggleKey
-    	local reg        = false
     	local activ      = false
     	local monitor    = client.screenSize.x/1600
     	local F14        = drawMgr:CreateFont("F14","Tahoma",14*monitor,550*monitor) 
@@ -177,6 +176,15 @@ function Roshan( kill )
 	end
 end
 
+function GameClose()
+	collectgarbage("collect")
+	script:UnregisterEvent(Roshan)
+	script:UnregisterEvent(Key)
+	script:UnregisterEvent(Tick)
+	statusText.visible = false
+end
+
 script:RegisterEvent(EVENT_TICK,Tick)
 script:RegisterEvent(EVENT_KEY,Key)
 script:RegisterEvent(EVENT_DOTA,Roshan)
+script:RegisterEvent(EVENT_CLOSE,GameClose)
