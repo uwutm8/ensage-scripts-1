@@ -6,12 +6,10 @@ config:SetParameter("Active", "U", config.TYPE_HOTKEY)
 config:Load()
 
 local toggleKey   = config.Active
-local reg         = false
 local activ       = false
 local monitor     = client.screenSize.x/1600
 local F14         = drawMgr:CreateFont("F14","Tahoma",14*monitor,550*monitor) 
 local statusText  = drawMgr:CreateText(10*monitor,290*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Hex: Initators",F14) statusText.visible = false
-
 
 local hotkeyText
 if string.byte("A") <= toggleKey and toggleKey <= string.byte("Z") then
@@ -22,8 +20,6 @@ end
 
 function Key(msg,code)
 	if client.chat or client.console or client.loading then return end
-	local me = entityList:GetMyHero()
-
 	if IsKeyDown(toggleKey) then
 		activ = not activ
 		if activ then
@@ -35,28 +31,23 @@ function Key(msg,code)
 end
 
 function Tick(tick)
+	if not SleepCheck() then return end Sleep(30)
 	local me    = entityList:GetMyHero()
 	local ID    = me.classId
 	local sheep = me:FindItem("item_sheepstick")
-
-	if ID == CDOTA_Unit_Hero_Lion or ID == CDOTA_Unit_Hero_ShadowShaman or sheep then
-		statusText.visible = true
-	end
-
+	if ID == CDOTA_Unit_Hero_Lion or ID == CDOTA_Unit_Hero_ShadowShaman or sheep then statusText.visible = true end
 	if PlayingGame() and me.alive and not (client.paused or me:IsChanneling()) then
-
 		if ID == CDOTA_Unit_Hero_Lion then
-			Disable(me,2,"lion_voodoo",1,"lion_impale")
+			Disable(me,2,"lion_voodoo",nil)
 		elseif ID == CDOTA_Unit_Hero_ShadowShaman then
-			Disable(me,2,"shadow_shaman_voodoo",3,"shadow_shaman_shackles")
+			Disable(me,2,"shadow_shaman_voodoo",nil)
 		else
-			Disable(me,nil,nil,nil,nil)
+			Disable(me,nil,nil,sheep)
 		end
 	end
 end
 
-function Disable(me,disable,nativeSpell,disable2,nativeSpell2)
-	local sheep   = me:FindItem("item_sheepstick")
+function Disable(me,abilityHex,abilityHexName,sheep)
 	local enemies = entityList:GetEntities({type=LuaEntity.TYPE_HERO,team = 5-me.team,alive=true,visible=true,illusion=false})
 	
 	for i,v in ipairs(enemies) do
@@ -69,72 +60,39 @@ function Disable(me,disable,nativeSpell,disable2,nativeSpell2)
 			if GetDistance2D(v,me) < 800 and sheep and sheep:CanBeCasted() then
 				if activ then
 					me:SafeCastItem("item_sheepstick",v)
-					Sleep(500)
 					break
 				end
 				if blink and blink.cd > 11 then
 					me:SafeCastItem("item_sheepstick",v)
-					Sleep(500)
 					break
 				end
 				if Initiation[v.name] then
-					local iSpell =  v:FindSpell(Initiation[v.name].Spell)
-					local iLevel = iSpell.level 
-					if iSpell.level > 0 and iSpell.cd > iSpell:GetCooldown(iLevel) - 1 then
+					local eleven = v:FindSpell(Initiation[v.name].Spell)
+					local twelve = eleven.level 
+					if eleven.level > 0 and eleven.cd > eleven:GetCooldown(twelve) - 1 then
 						me:SafeCastItem("item_sheepstick",v)
-						Sleep(500)
 						break
 					end
 				end
-			end
+			elseif abilityHex and abilityHexName then
+				local five = me:GetAbility(abilityHex)
+				local six  = me:FindAbility(abilityHexName)
 
-			if disable ~= nil then
-				local disable1  = me:GetAbility(disable)
-				local SpellFind = me:FindAbility(nativeSpell)
+				if GetDistance2D(v,me) < six.castRange and six and six:CanBeCasted() then
 
-				if SpellFind:CanBeCasted() and GetDistance2D(v,me) < disable1.castRange then
 					if activ then
-						me:SafeCastAbility(disable1,v)
-						Sleep(500)
+						me:SafeCastAbility(five,v)
 						break
 					end
 					if blink and blink.cd > 11 then
-						me:SafeCastAbility(disable1,v)
-						Sleep(500)
+						me:SafeCastAbility(five,v)
 						break
 					end
 					if Initiation[v.name] then
-						local iSpell = v:FindSpell(Initiation[v.name].Spell)
-						local iLevel = iSpell.level 
-						if iSpell.level > 0 and iSpell.cd > iSpell:GetCooldown(iLevel) - 1 then
-							me:SafeCastAbility(disable1,v)
-							Sleep(500)
-							break
-						end
-					end
-				end
-			end
-			if disable2 ~= nil then
-				local disable2x  = me:GetAbility(disable2)
-				local SpellFindz = me:FindAbility(nativeSpell2)
-
-				if SpellFindz:CanBeCasted() and GetDistance2D(v,me) < disable2x.castRange then
-					if activ then
-						me:SafeCastAbility(disable2x,v)
-						Sleep(500)
-						break
-					end
-					if blink and blink.cd > 11 then
-						me:SafeCastAbility(disable2x,v)
-						Sleep(500)
-						break
-					end
-					if Initiation[v.name] then
-						local iSpellz = v:FindSpell(Initiation[v.name].Spell)
-						local iLevelz = iSpellz.level 
-						if iSpellz.level > 0 and iSpellz.cd > iSpellz:GetCooldown(iLevelz) - 1 then
-							me:SafeCastAbility(disable2x,v)
-							Sleep(500)
+						local eleven = v:FindSpell(Initiation[v.name].Spell)
+						local twelve = eleven.level 
+						if eleven.level > 0 and eleven.cd > eleven:GetCooldown(twelve) - 1 then
+							me:SafeCastAbility(five,v)
 							break
 						end
 					end
@@ -146,15 +104,12 @@ end
 
 function Load()
 	if PlayingGame() then
-		local me = entityList:GetMyHero()
-		if not me then 
-			script:Disable()
-		else
-			reg = true
-			script:RegisterEvent(EVENT_TICK,Tick)
-			script:RegisterEvent(EVENT_KEY,Key)
-			script:UnregisterEvent(Load)
-		end
+		reg = true
+		script:RegisterEvent(EVENT_TICK,Tick)
+		script:RegisterEvent(EVENT_KEY,Key)
+		script:UnregisterEvent(Load)
+	else
+		script:Disable()
 	end
 end
 
