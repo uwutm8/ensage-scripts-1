@@ -1,7 +1,7 @@
 require("libs.Utils")
 require("libs.ScriptConfig")
 require("libs.Stuff")
-config = ScriptConfig.new()
+local config = ScriptConfig.new()
 config:SetParameter("Active", "U", config.TYPE_HOTKEY)
 config:Load()
 
@@ -9,7 +9,7 @@ local toggleKey   = config.Active
 local activ       = false
 local monitor     = client.screenSize.x/1600
 local F14         = drawMgr:CreateFont("F14","Tahoma",14*monitor,550*monitor) 
-local statusText  = drawMgr:CreateText(10*monitor,290*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Hex: Initators",F14) statusText.visible = false
+local statusText  = drawMgr:CreateText(10*monitor,290*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Hex: Initators",F14) statusText.visible = true
 
 local hotkeyText
 if string.byte("A") <= toggleKey and toggleKey <= string.byte("Z") then
@@ -35,7 +35,6 @@ function Tick(tick)
 	local me    = entityList:GetMyHero()
 	local ID    = me.classId
 	local sheep = me:FindItem("item_sheepstick")
-	if ID == CDOTA_Unit_Hero_Lion or ID == CDOTA_Unit_Hero_ShadowShaman or sheep then statusText.visible = true end
 	if PlayingGame() and me.alive and not (client.paused or me:IsChanneling()) then
 		if ID == CDOTA_Unit_Hero_Lion then
 			Disable(me,2,"lion_voodoo",nil)
