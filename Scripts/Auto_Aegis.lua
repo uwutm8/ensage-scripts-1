@@ -15,7 +15,7 @@
     	require("libs.Utils")
     	require("libs.ScriptConfig")
 
-    	config = ScriptConfig.new()
+    	local config = ScriptConfig.new()
     	config:SetParameter("ToggleKey", "J", config.TYPE_HOTKEY)
     	config:Load()
 
@@ -23,7 +23,7 @@
     	local activ      = false
     	local monitor    = client.screenSize.x/1600
     	local F14        = drawMgr:CreateFont("F14","Tahoma",14*monitor,550*monitor) 
-    	local statusText = drawMgr:CreateText(10*monitor,590*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Aegis: Off",F14) statusText.visible = false
+    	local statusText = drawMgr:CreateText(10*monitor,590*monitor,-1,"(" .. string.char(toggleKey) .. ") Auto Aegis: Off",F14) statusText.visible = true
     	local EmberRosh  = 0
     	local aegisloc   = Vector(2413.25,-239.313,4.1875)
     	local shortloc   = Vector(2515,-124,3)
@@ -49,11 +49,10 @@ end
 
 function Tick(tick)
 	if PlayingGame() then
-		local me = entityList:GetMyHero()
+		local me    = entityList:GetMyHero()
 		local blink = me:FindItem("item_blink")
 		if not (activ and me) then return end
 		if me.alive and not me:IsChanneling() then
-			statusText.visible = true
 			local items = entityList:GetEntities({type=LuaEntity.TYPE_ITEM_PHYSICAL})
 			for i,v in ipairs(items) do
 				local IH = v.itemHolds
@@ -83,10 +82,10 @@ function Tick(tick)
 	end
 end
 
-function Roshan( kill )
+function Roshan (kill)
 	if PlayingGame() then
-		local me = entityList:GetMyHero()
-		local blink      = me:FindItem("item_blink")
+		local me    = entityList:GetMyHero()
+		local blink = me:FindItem("item_blink")
 
 		if kill.name == "dota_roshan_kill" and activ then
 			if GetDistance2D(aegisloc,me) <= 1200 and blink and blink.cd == 0 then		
