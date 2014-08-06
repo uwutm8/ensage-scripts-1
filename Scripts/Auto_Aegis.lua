@@ -50,34 +50,37 @@ end
 function Tick(tick)
 	if PlayingGame() then
 		local me    = entityList:GetMyHero()
-		local blink = me:FindItem("item_blink")
-		if blink then statusText.visible = true end
-		if ID == CDOTA_Unit_Hero_EmberSpirit or ID == CDOTA_Unit_Hero_AntiMage or ID == CDOTA_Unit_Hero_Rattletrap or ID == CDOTA_Unit_Hero_FacelessVoid or ID == CDOTA_Unit_Hero_Magnataur or ID == CDOTA_Unit_Hero_SandKing or ID == CDOTA_Unit_Hero_QueenOfPain or ID == CDOTA_Unit_Hero_Morphling or ID == CDOTA_Unit_Hero_Naga_Siren or ID == CDOTA_Unit_Hero_StormSpirit or ID == CDOTA_Unit_Hero_Sniper or ID == CDOTA_Unit_Hero_Venomancer then statusText.visible = true end
-		if not activ then return end
-		if me.alive and not me:IsChanneling() then
-			local items = entityList:GetEntities({type=LuaEntity.TYPE_ITEM_PHYSICAL})
-			for i,v in ipairs(items) do
-				local IH = v.itemHolds
-				if IH.name == "item_aegis" and GetDistance2D(v,me) <= 400 then
-					entityList:GetMyPlayer():TakeItem(v)
-					break
+		if not me then
+			script:Disable()
+		else
+			local blink = me:FindItem("item_blink")
+			statusText.visible = true
+			if not activ then return end
+			if me.alive and not me:IsChanneling() then
+				local items = entityList:GetEntities({type=LuaEntity.TYPE_ITEM_PHYSICAL})
+				for i,v in ipairs(items) do
+					local IH = v.itemHolds
+					if IH.name == "item_aegis" and GetDistance2D(v,me) <= 400 then
+						entityList:GetMyPlayer():TakeItem(v)
+						break
+					end
 				end
-			end
-			if EmberRosh == 1 then
-				local sleight = me:GetAbility(2)
-				if sleight:CanBeCasted() then
-					Sleep(50,"two")
-					EmberRosh = 2
-				else
-					EmberRosh = 0
-				end
-			elseif EmberRosh == 2 then
-				local sleight = me:GetAbility(2)
-				if not sleight:CanBeCasted() then
-					EmberRosh = 0
-				elseif SleepCheck("two") then
-					me:CastAbility(sleight,shortloc)
-					EmberRosh = 0
+				if EmberRosh == 1 then
+					local sleight = me:GetAbility(2)
+					if sleight:CanBeCasted() then
+						Sleep(50,"two")
+						EmberRosh = 2
+					else
+						EmberRosh = 0
+					end
+				elseif EmberRosh == 2 then
+					local sleight = me:GetAbility(2)
+					if not sleight:CanBeCasted() then
+						EmberRosh = 0
+					elseif SleepCheck("two") then
+						me:CastAbility(sleight,shortloc)
+						EmberRosh = 0
+					end
 				end
 			end
 		end
@@ -151,7 +154,7 @@ function Roshan (kill)
 					for i,v in ipairs(items) do
 						local IH = v.itemHolds
 						if IH.name == "item_aegis" then
-							me:Attack(v)
+							me:Attack(v.itemHolds)
 							break
 						end
 					end
