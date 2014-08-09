@@ -51,9 +51,14 @@ function Tick(tick)
 	if not IsIngame() or not SleepCheck() then return end	
 	local me = entityList:GetMyHero()
 	if not me then return end	
+	local ID    = me.classId
 	local blink = me:FindItem("item_blink")
-	if not blink then return end
-	statusText.visible = true
+	if blink then
+		statusText.visible = true
+	end
+	if ID == CDOTA_Unit_Hero_EmberSpirit or ID == CDOTA_Unit_Hero_AntiMage or ID == CDOTA_Unit_Hero_Rattletrap or ID == CDOTA_Unit_Hero_FacelessVoid or ID == CDOTA_Unit_Hero_Magnataur or ID == CDOTA_Unit_Hero_SandKing or ID == CDOTA_Unit_Hero_QueenOfPain or ID == CDOTA_Unit_Hero_Morphling or ID == CDOTA_Unit_Hero_Naga_Siren or ID == CDOTA_Unit_Hero_StormSpirit or ID == CDOTA_Unit_Hero_Sniper or ID == CDOTA_Unit_Hero_Venomancer then
+		statusText.visible = true
+	end
 	if not activ then return end
 	if me.alive and not me:IsChanneling() then
 		local items = entityList:GetEntities({type=LuaEntity.TYPE_ITEM_PHYSICAL})
