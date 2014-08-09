@@ -5,7 +5,6 @@ config:SetParameter("Active", "N", config.TYPE_HOTKEY)
 config:Load()
 
 local toggleKey   = config.Active
-local disableKey  = config.UseDisableKey
 local reg         = false
 local activ       = true
 local monitor     = client.screenSize.x/1600
@@ -33,20 +32,21 @@ function Key(msg,code)
 end
 
 function Tick(tick)
-	if not SleepCheck() then return end	Sleep(30)
+	if not IsIngame() or not SleepCheck() then return end Sleep(30)
 	local me = entityList:GetMyHero()
-	if not (me and activ) then return end
+	if not me then return end	
+	if not activ then return end	
+	local eth = me:FindItem("item_ethereal_blade")
+	if not eth then return end
 	if me.alive and not me:IsChanneling() then
-		local eth     = me:FindItem("item_ethereal_blade")
-		if eth then
-			statusText.visible = true
-		end
+
+		statusText.visible = true
+
 		local enemies = entityList:GetEntities({type=LuaEntity.TYPE_HERO,team = 5-me.team,alive=true,visible=true,illusion=false})
 		for i,v in ipairs(enemies) do
-			local MI = v:IsMagicImmune()
 			local invis    = me:IsInvisible()
 
-			if GetDistance2D(v,me) <= 800 and eth and eth:CanBeCasted() and activ and not (MI or invis) then
+			if GetDistance2D(v,me) <= 800 and eth and eth:CanBeCasted() and activ and not invis then
 				me:SafeCastItem("item_ethereal_blade",v)
 				Sleep(500)
 				break
