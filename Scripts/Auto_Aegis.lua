@@ -190,7 +190,21 @@ function GameClose()
 	statusText.visible = false
 end
 
-script:RegisterEvent(EVENT_TICK,Tick)
-script:RegisterEvent(EVENT_KEY,Key)
-script:RegisterEvent(EVENT_DOTA,Roshan)
+function Load()
+	if PlayingGame() then
+		local me    = entityList:GetMyHero()
+		if not me then
+			script:Disable()
+
+		else
+			reg = true
+			script:RegisterEvent(EVENT_TICK,Tick)
+			script:RegisterEvent(EVENT_KEY,Key)
+			script:RegisterEvent(EVENT_DOTA,Roshan) 
+			script:UnregisterEvent(Load)
+		end
+	end
+end
+
 script:RegisterEvent(EVENT_CLOSE,GameClose)
+script:RegisterEvent(EVENT_TICK,Load)
